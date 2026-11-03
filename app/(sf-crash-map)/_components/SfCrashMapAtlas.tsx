@@ -209,12 +209,14 @@ export default function SfCrashMapAtlas() {
     )
   }, [atlas, selectedNeighborhoodId])
 
-  latestMapStateRef.current = {
-    atlas,
-    activeFocus,
-    volumeIds,
-    selectedNeighborhoodId,
-  }
+  useEffect(() => {
+    latestMapStateRef.current = {
+      atlas,
+      activeFocus,
+      volumeIds,
+      selectedNeighborhoodId,
+    }
+  }, [activeFocus, atlas, selectedNeighborhoodId, volumeIds])
 
   useEffect(() => {
     if (!atlas || !mapContainerRef.current || mapRef.current) return
