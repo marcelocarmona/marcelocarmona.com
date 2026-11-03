@@ -9,7 +9,7 @@ const siteMetadata: SiteMetadata = {
   language: 'en-us',
   theme: 'dark', // system, dark or light
   siteUrl: 'https://marcelocarmona.com',
-  siteRepo: 'https://github.com/marcelocarmona/marcelocarmona',
+  siteRepo: 'https://github.com/marcelocarmona/marcelocarmona.com',
   siteLogo: '/static/images/logo.png',
   image: '/static/images/avatar.png',
   socialBanner: '/static/images/twitter-card.png',

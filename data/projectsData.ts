@@ -6,7 +6,7 @@ const projectsData: ProjectData[] = [
     description: `A multilingual Next.js and MDX site for technical writing, localized routes,
     RSS feeds, structured data, and performance-minded static pages.`,
     imgSrc: '/static/images/twitter-card.png',
-    href: 'https://github.com/marcelocarmona/marcelocarmona',
+    href: 'https://github.com/marcelocarmona/marcelocarmona.com',
   },
   {
     title: 'Frontend engineering guides',
