@@ -1,38 +1,118 @@
-# Marcelo Carmona
+# marcelocarmona.com
 
-**AI engineer and software engineer building reliable, user-facing AI products.**
+Personal website and blog, built with Next.js, Tailwind CSS, and MD/MDX content.
 
-I am currently focused on AI engineering: LLM-powered applications, agentic workflows,
-tool use, retrieval, evaluations, observability, and production delivery. My background in
-frontend architecture, cloud infrastructure, and product engineering helps me turn AI
-prototypes into maintainable products people can actually use.
+The site currently includes:
 
-## Current focus
+- English and Spanish routes
+- Blog, guides, projects, tags, and about pages
+- A Cal.com booking page at `/book`
+- Vercel Analytics and Speed Insights in production
 
-- Building practical AI products and agent workflows
-- Designing reliable systems around models, tools, data, and human feedback
-- Connecting AI capabilities to polished web experiences
-- Sharing what I learn about AI, frontend architecture, cloud platforms, and delivery
+## Stack
 
-## Selected work
+- Next.js 16
+- React 19
+- Tailwind CSS 4
+- MDX via `mdx-bundler`
+- Giscus comments
+- Optional Sentry and newsletter integrations
 
-- [**marcelocarmona.com**](https://marcelocarmona.com) — My multilingual technical
-  writing, engineering guides, and product experiments.
-- [**FreeMindGPT**](https://github.com/marcelocarmona/FreeMindGPT) — An AI chat
-  experiment built with Next.js, the Vercel AI SDK, multiple model providers,
-  authentication, and persistent chat history.
-- [**SF Crash Map**](https://marcelocarmona.com/sf-crash-map) — An interactive product
-  for exploring recent San Francisco injury crash data.
-- [**Frontend engineering guides**](https://marcelocarmona.com/guides) — Practical
-  writing about React, Next.js, performance, architecture, and platform tradeoffs.
+## Requirements
 
-## Connect
+- Node.js `24.x`
+- npm
 
-[Website](https://marcelocarmona.com) ·
-[Writing](https://marcelocarmona.com/blog) ·
-[LinkedIn](https://www.linkedin.com/in/carmonamarcelo)
+## Local development
 
+Install dependencies:
+
+```bash
+npm install
+```
+
+Start the standard development server:
+
+```bash
+npm run dev
+```
+
+Build and serve production locally:
+
+```bash
+npm run build
+npm run serve
+```
+
+The app runs at `http://localhost:3000`.
+
+Run the checks used in CI:
+
+```bash
+npm run lint:check
+npm test
+npm run build
+```
+
+## Environment variables
+
+Use `.env.example` as a starting point for `.env.local`.
+
+Most variables are optional and only needed if you want to enable:
+
+- Giscus, Utterances, or Disqus comments
+- Sentry
+- Newsletter provider API routes
+
+If you are only editing content, layout, or styles, you can usually leave them unset.
+
+## Where to edit
+
+- `data/siteMetadata.ts`: site metadata, social links, analytics, comments, newsletter settings
+- `data/blog/`: blog posts in `.md` or `.mdx`
+- `data/authors/default.md`: author profile
+- `data/projectsData.ts`: projects page data
+- `data/headerNavLinks.ts`: navigation links
+- `data/ui/`: localized UI copy
+- `app/`: routes, metadata, feeds, robots, sitemap
+- `components/`: shared UI, embeds, analytics, and comments
+- `layouts/`: post and list layouts
+- `public/static/`: images and favicons
+- `css/tailwind.css`: Tailwind theme tokens and global styling
+
+## Writing posts
+
+Posts live in `data/blog/` and can use `.md` or `.mdx`.
+
+Typical frontmatter:
+
+```md
 ---
+title: 'My Post'
+date: '2026-03-25'
+tags: ['Next.js', 'MDX']
+summary: 'Short description'
+draft: false
+lang: en
+translationKey: my-post
+layout: PostLayout
+---
+```
 
-This repository powers [marcelocarmona.com](https://marcelocarmona.com). See the
-[development guide](./DEVELOPMENT.md) to run the site locally or contribute.
+Notes:
+
+- `lang` defaults to English. Use `lang: es` for Spanish posts.
+- Use the same `translationKey` to pair English and Spanish versions of the same article.
+- `summary`, `draft`, `layout`, `images`, `authors`, and `canonicalUrl` are optional.
+
+To scaffold a new post:
+
+```bash
+node ./scripts/compose.mts
+```
+
+## Deployment
+
+This repository is set up for Vercel.
+
+If you add new third-party scripts or providers, review `next.config.mts` and update the Content Security Policy as needed.
