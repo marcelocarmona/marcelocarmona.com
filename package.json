@@ -83,6 +83,7 @@
   },
   "overrides": {
     "postcss": "$postcss",
+    "katex": "^0.18.2",
     "mdx-bundler": {
       "uuid": "^11.1.1"
     },
