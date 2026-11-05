@@ -21,6 +21,13 @@ const projectsData: ProjectData[] = [
     neighborhoods.`,
     href: '/sf-crash-map',
   },
+  {
+    title: 'Isometric Buenos Aires',
+    description: `An isometric pixel-art map of every building in Buenos Aires, rendered from open
+    cadastre, OpenStreetMap and street tree data.`,
+    imgSrc: '/isometric-buenos-aires/og.jpg',
+    href: '/isometric-buenos-aires',
+  },
 ]
 
 export default projectsData

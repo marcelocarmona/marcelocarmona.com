@@ -41,3 +41,6 @@ yarn-error.log*
 
 # Sentry Config File
 .sentryclirc
+
+# isometric buenos aires raw data downloads
+/.cache/

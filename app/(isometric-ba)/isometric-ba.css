@@ -1,0 +1,225 @@
+@import 'leaflet/dist/leaflet.css';
+
+/* Label opacity before the map sets the live values on .iba-map. */
+.iba-root {
+  --iba-barrio: 1;
+  --iba-landmark: 0;
+  --iba-street: 0;
+}
+
+.iba-map.leaflet-container {
+  background: #0d1220;
+  font-family: inherit;
+  cursor: grab;
+  outline: none;
+}
+
+.iba-map.leaflet-container.leaflet-dragging {
+  cursor: grabbing;
+}
+
+.iba-map .iba-tiles img {
+  image-rendering: pixelated;
+}
+
+/* The low-res underlay is only ever seen blown up for a moment, so smooth it like a progressive image. */
+.iba-map .iba-underlay img {
+  image-rendering: auto;
+}
+
+/* Labels */
+.iba-label {
+  width: 0;
+  height: 0;
+  overflow: visible;
+}
+
+.iba-label__inner {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.iba-label__text {
+  color: #fff;
+  text-shadow:
+    0 1px 2px rgb(0 0 0 / 0.9),
+    0 0 6px rgb(13 18 32 / 0.85);
+}
+
+.iba-label--barrio .iba-label__inner {
+  opacity: var(--iba-barrio);
+}
+
+.iba-label--barrio .iba-label__text {
+  font-family: 'Fraunces Variable', serif;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.iba-label--landmark .iba-label__inner {
+  opacity: var(--iba-landmark);
+  transform: translate(-6px, -50%);
+  padding: 3px 9px 3px 5px;
+  border: 1px solid rgb(255 255 255 / 0.14);
+  border-radius: 999px;
+  background: rgb(20 26 43 / 0.82);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+}
+
+.iba-map[data-landmark='on'] .iba-label--landmark .iba-label__inner {
+  pointer-events: auto;
+}
+
+.iba-label--landmark .iba-label__inner:hover {
+  border-color: rgb(125 211 252 / 0.7);
+  background: rgb(27 35 56 / 0.95);
+}
+
+.iba-label--landmark .iba-label__text {
+  text-shadow: none;
+}
+
+.iba-label__pin {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #7dd3fc;
+  box-shadow: 0 0 0 2px rgb(125 211 252 / 0.25);
+}
+
+.iba-label--street .iba-label__inner {
+  opacity: var(--iba-street);
+}
+
+.iba-label--street .iba-label__text {
+  font-family: 'Spline Sans Mono Variable', monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  color: rgb(255 255 255 / 0.85);
+  animation: iba-fade-in 0.35s ease-out;
+}
+
+@keyframes iba-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Selected place marker */
+.iba-focus {
+  width: 0;
+  height: 0;
+}
+
+.iba-focus__ring,
+.iba-focus__dot {
+  position: absolute;
+  left: 0;
+  top: 0;
+  border-radius: 999px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.iba-focus__dot {
+  width: 12px;
+  height: 12px;
+  background: #fde047;
+  box-shadow: 0 0 0 3px rgb(13 18 32 / 0.8);
+}
+
+.iba-focus__ring {
+  width: 56px;
+  height: 56px;
+  border: 2px solid rgb(253 224 71 / 0.8);
+  animation: iba-pulse 1.8s ease-out infinite;
+}
+
+@keyframes iba-pulse {
+  from {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(0.3);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.4);
+  }
+}
+
+/* Loader: three isometric blocks */
+.iba-loader {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 44px;
+}
+
+.iba-loader span {
+  width: 14px;
+  background: linear-gradient(180deg, #f4d9a8, #c9925a);
+  animation: iba-build 1.2s ease-in-out infinite;
+}
+
+.iba-loader span:nth-child(2) {
+  background: linear-gradient(180deg, #d9e2f2, #8a9ab8);
+  animation-delay: 0.15s;
+}
+
+.iba-loader span:nth-child(3) {
+  background: linear-gradient(180deg, #f0b8a0, #b56a52);
+  animation-delay: 0.3s;
+}
+
+@keyframes iba-build {
+  0%,
+  100% {
+    height: 12px;
+  }
+  50% {
+    height: 44px;
+  }
+}
+
+.iba-share-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 12px;
+  border: 1px solid rgb(255 255 255 / 0.12);
+  border-radius: 12px;
+  background: rgb(255 255 255 / 0.05);
+  color: rgb(255 255 255 / 0.85);
+  font-size: 13px;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+}
+
+.iba-share-btn:hover {
+  border-color: rgb(255 255 255 / 0.25);
+  background: rgb(255 255 255 / 0.1);
+  color: #fff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .iba-focus__ring,
+  .iba-loader span,
+  .iba-label--street .iba-label__text {
+    animation: none;
+  }
+}

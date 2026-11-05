@@ -125,6 +125,13 @@ export const PUBLIC_STATIC_PAGES = [
     path: '/sf-crash-map',
     description: 'Explore recent DataSF injury crash records across San Francisco neighborhoods.',
   },
+  {
+    title: 'Isometric Buenos Aires',
+    locale: 'en',
+    path: '/isometric-buenos-aires',
+    description:
+      'Every building in Buenos Aires drawn as isometric pixel art, with search, random places and shareable links.',
+  },
 ]
 
 export function getPublicStaticPages() {
