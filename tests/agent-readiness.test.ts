@@ -10,6 +10,8 @@ import { aboutCopy } from '../app/_shared/AboutPage'
 import EnglishHomePage from '../app/(en)/page'
 import { buildWebsiteSchema } from '../app/_shared/RootLayoutShell'
 import { FooterTrustLinks } from '../components/Footer'
+import Logo from '../components/Logo'
+import SocialIcon from '../components/social-icons'
 import {
   appendVaryAccept,
   contentPathFromMarkdownPath,
@@ -34,6 +36,22 @@ function renderedText(html: string): string {
 }
 
 describe('server-rendered agent content', () => {
+  it('renders the logo and social icons as accessible inline SVGs', () => {
+    const logo = renderToStaticMarkup(createElement(Logo))
+    const github = renderToStaticMarkup(
+      createElement(SocialIcon, {
+        kind: 'github',
+        href: 'https://github.com/marcelocarmona',
+      })
+    )
+
+    expect(logo).toContain('viewBox="171.359 141.815 169.58 166.408"')
+    expect(logo).toContain('aria-hidden="true"')
+    expect(github).toContain('<span class="sr-only">github</span>')
+    expect(github).toContain('viewBox="0 0 24 24"')
+    expect(github).toContain('aria-hidden="true"')
+  })
+
   it('renders a substantial homepage with a nested heading structure without client JavaScript', async () => {
     const html = renderToStaticMarkup(await EnglishHomePage())
 

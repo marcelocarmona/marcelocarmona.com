@@ -96,14 +96,6 @@ const nextConfig: NextConfig = withBundleAnalyzer({
   images: {
     remotePatterns: [{ protocol: 'https', hostname: 'i.ytimg.com' }],
   },
-  turbopack: {
-    rules: {
-      '*.svg': {
-        loaders: ['@svgr/webpack'],
-        as: '*.js',
-      },
-    },
-  },
   async headers() {
     return [
       {
@@ -128,11 +120,6 @@ const nextConfig: NextConfig = withBundleAnalyzer({
     ]
   },
   webpack: (config, { dev, isServer }) => {
-    config.module.rules.push({
-      test: /\.svg$/,
-      use: ['@svgr/webpack'],
-    })
-
     if (!dev && !isServer) {
       // Disable eval-source-map in production to comply with CSP
       config.devtool = false

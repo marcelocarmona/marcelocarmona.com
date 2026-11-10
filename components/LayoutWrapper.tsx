@@ -2,7 +2,7 @@
 
 import { useResolvedLocale } from '@/lib/i18n/resolve'
 import siteMetadata from '@/data/siteMetadata'
-import Logo from '@/data/logo.svg'
+import Logo from './Logo'
 import { getHomePath } from '@/lib/i18n/routes'
 import Link from './Link'
 import SectionContainer from './SectionContainer'
