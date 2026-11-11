@@ -1,0 +1,66 @@
+#pragma once
+
+#include <Arduino.h>
+#include <Preferences.h>
+#include <api-client/display.h>
+#include <config.h>
+#include <display.h>
+#include <esp_sleep.h>
+#include <preferences_persistence.h>
+#include <refresh_interval.h>
+#include <services/firmware_update.h>
+#include <special_function.h>
+#include <stored_logs.h>
+
+#ifdef BOARD_TRMNL_X
+class Modem;
+#endif
+
+//
+// Shared application state, defined in globals.cpp. Include this header
+// instead of declaring ad-hoc externs against bl.cpp or display.cpp.
+//
+
+// --- Persistence & long-lived services ---
+extern Preferences preferences;
+extern PreferencesPersistence preferencesPersistence;
+extern StoredLogs storedLogs;
+extern RefreshInterval refreshInterval;
+extern FirmwareUpdateService firmwareUpdateService;
+
+// --- Image download / API state ---
+extern String new_filename;
+extern ApiDisplayResult apiDisplayResult;
+extern uint8_t *buffer;
+extern char filename[1024];      // image URL
+extern char message_buffer[128]; // message to show on the screen
+extern bool status;              // need to download a new image
+extern bool reset_firmware;      // need to reset credentials
+extern bool log_retry;           // need to log connection retry
+
+// --- Wake / sleep state ---
+extern unsigned long startup_time; // millis() at boot, for the wake time statistics
+extern uint32_t time_since_sleep;
+extern float battery_voltage; // read at wake, before the display and WiFi draw current
+extern esp_sleep_wakeup_cause_t wakeup_reason;
+extern SPECIAL_FUNCTION special_function;
+extern bool special_function_chosen; // picked on the device (TRMNL X touch menu), not the saved one
+extern bool stay_awake_for_touchbar; // TRMNL X: stay awake and online after the screen for more touch bar taps
+extern int last_wifi_rssi;              // RTC: signal strength (dBm) at the last connection, 0 if unknown
+extern int iPrevWakeTime;               // RTC: total wake time of the last cycle (for statistics collection)
+extern bool bUsedCachedImage;           // RTC: last image displayed was read from cache (for statistics collection)
+extern uint8_t need_to_refresh_display; // RTC
+extern bool otg_state;                  // RTC: OTG state across deep sleep
+
+// --- Display refresh bookkeeping ---
+extern int iUpdateCount;   // RTC: partial updates since the last full refresh
+extern RTC_DATA_ATTR bool bCanDoPartial; // RTC
+extern uint32_t iTempProfile;
+extern uint32_t panel_rev; // EPD revision read by get_panel_rev(); 0 = unknown/not read
+
+#ifdef BOARD_TRMNL_X
+// --- TRMNL X hardware ---
+extern Modem *g_modem;
+extern battery_count_t battery_count;
+extern bool battery_charging;
+#endif // BOARD_TRMNL_X

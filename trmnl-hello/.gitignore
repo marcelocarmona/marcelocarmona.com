@@ -1,4 +1,6 @@
 **/.env
 node_modules/
 **/.pio/
+**/.venv/
+.vscode/
 .DS_Store

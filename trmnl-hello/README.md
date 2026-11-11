@@ -7,14 +7,14 @@ Codex usage into health, development, social, and other daily metrics.
 ## Projects
 
 - [`server/`](server/) contains the Node.js data adapters, UI renderer, device
-  API, and—next—the real-time event service.
-- [`firmware/`](firmware/) will contain the ESP32-S3 firmware installed on the
-  Seeed Studio TRMNL 7.5-inch DIY display.
+  API, and the working Codex usage dashboard.
+- [`firmware/`](firmware/) contains the ESP32-S3 code installed on the Seeed
+  Studio TRMNL 7.5-inch OG DIY display.
 
 The server currently renders the working Codex usage dashboard through the
-standard TRMNL BYOS protocol. The firmware project is the next implementation
-milestone and will add persistent Wi-Fi, event-driven updates, and partial
-e-paper refresh.
+standard TRMNL BYOS protocol. The firmware starts from a pinned, buildable
+snapshot of the official TRMNL firmware so InkPulse can evolve without losing
+the supported board configuration, provisioning flow, or recovery path.
 
 ## Development
 
@@ -25,10 +25,23 @@ npm install
 npm start
 ```
 
-Run all implemented project tests:
+Run the server tests:
 
 ```sh
 npm test
 ```
 
-See [`server/README.md`](server/README.md) for device setup and configuration.
+Set up, build, and test the firmware:
+
+```sh
+npm run firmware:setup
+npm run firmware:build
+npm run firmware:test
+```
+
+After the firmware environment is installed, run both project suites with
+`npm run test:all`.
+
+See [`server/README.md`](server/README.md) for device setup and configuration,
+and [`firmware/README.md`](firmware/README.md) for the firmware target and safe
+development sequence.

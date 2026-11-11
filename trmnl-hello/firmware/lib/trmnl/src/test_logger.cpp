@@ -1,0 +1,32 @@
+#include <cstdarg>
+#include <cstdio>
+#include <trmnl_log.h>
+
+#ifdef PIO_UNIT_TESTING
+
+// Unified logging function for tests
+void log_impl(LogLevel level, LogMode mode, const char *file, int line, const char *format, ...) {
+  va_list args;
+  va_start(args, format);
+
+  const char *level_str = (level == LOG_VERBOSE) ? "verbose"
+                          : (level == LOG_INFO)  ? "info"
+                          : (level == LOG_WARN)  ? "warn"
+                          : (level == LOG_ERROR) ? "error"
+                                                 : "fatal";
+
+  printf("  [test log:%s] %s:%d ", level_str, file, line);
+  vprintf(format, args);
+  printf("\n");
+
+  va_end(args);
+}
+
+// Stubs so lib/trmnl code that queries the verbose-logging flag (e.g. the
+// Log-Level request header in request_headers.cpp) links in the native test build.
+void set_verbose_logging(bool) {}
+bool get_verbose_logging() { return false; }
+bool read_verbose_logging() { return false; }
+void write_verbose_logging(bool) {}
+
+#endif
