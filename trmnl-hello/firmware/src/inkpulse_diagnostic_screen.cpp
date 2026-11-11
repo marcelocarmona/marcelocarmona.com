@@ -35,20 +35,25 @@ uint32_t inkpulse_diagnostic_screen_render(const InkPulseDiagnosticScreen &scree
   bbep.fillScreen(BBEP_WHITE);
   bbep.setTextColor(BBEP_BLACK, BBEP_WHITE);
 
-  draw_value("INKPULSE", 48, 64);
-  draw_label("OFFLINE HARDWARE TEST", 48, 104);
-  bbep.fillRect(48, 126, 704, 3, BBEP_BLACK);
+  draw_value("INKPULSE", 48, 62);
+  draw_label("DISPLAY RESPONSE LAB", 48, 100);
+  draw_label("OFFLINE", 654, 82);
+  bbep.fillRect(48, 124, 704, 3, BBEP_BLACK);
 
-  bbep.drawRoundRect(48, 162, 440, 218, 18, BBEP_BLACK);
-  draw_label("KEY3 PRESSES", 78, 208);
-  draw_value(String(screen.press_count), 78, 292);
+  bbep.drawRoundRect(48, 158, 440, 220, 18, BBEP_BLACK);
+  draw_label("KEY3 INPUT", 78, 204);
+  draw_value(String(screen.press_count), 78, 286);
+  draw_label("PRESS COUNT", 78, 342);
 
-  bbep.drawRoundRect(520, 162, 232, 218, 18, BBEP_BLACK);
-  draw_label("PREVIOUS TIME", 546, 208);
-  draw_value(screen.last_refresh_ms == 0 ? String("STARTING") : String(screen.last_refresh_ms) + " ms", 546, 258);
-  draw_label((String("NOW: ") + refresh_name(screen.refresh)).c_str(), 546, 318);
+  bbep.drawRoundRect(520, 158, 232, 220, 18, BBEP_BLACK);
+  draw_label("LAST REFRESH", 546, 204);
+  draw_value(screen.last_refresh_ms == 0 ? String("WAITING") : String(screen.last_refresh_ms) + " ms", 546, 256);
+  draw_label("CURRENT MODE", 546, 314);
+  draw_value(refresh_name(screen.refresh), 546, 354);
 
-  draw_label("Wi-Fi is off  |  Press KEY3 to refresh", 48, 430);
+  bbep.fillRect(48, 408, 704, 2, BBEP_BLACK);
+  draw_label("LOCAL TEST  |  WI-FI OFF", 48, 446);
+  draw_label("KEY3: REFRESH", 596, 446);
 
   const int refresh_mode =
     screen.refresh == InkPulseDiagnosticRefresh::Full ? REFRESH_FULL : REFRESH_PARTIAL;
