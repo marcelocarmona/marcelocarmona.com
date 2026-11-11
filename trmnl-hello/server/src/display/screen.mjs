@@ -93,8 +93,8 @@ function usageSvg({ usage, timeZone, now }) {
         .credit-detail { font-size: 17px; font-weight: 600; }
       </style>
       <rect width="800" height="480" fill="#fff"/>
-      <text x="40" y="45" class="brand">CODEX</text>
-      <text x="158" y="45" class="section">/ USAGE</text>
+      <text x="40" y="45" class="brand">INKPULSE</text>
+      <text x="202" y="45" class="section">/ CODEX</text>
       <text x="760" y="44" text-anchor="end" class="status">${escapeXml(status)}</text>
       <line x1="40" y1="64" x2="760" y2="64" stroke="#000" stroke-width="3"/>
 
@@ -124,7 +124,7 @@ function unavailableSvg({ message }) {
     <svg xmlns="http://www.w3.org/2000/svg" width="800" height="480" viewBox="0 0 800 480">
       <style>text { fill: #000; font-family: Arial, Helvetica, sans-serif; }</style>
       <rect width="800" height="480" fill="#fff"/>
-      <text x="400" y="170" text-anchor="middle" font-size="38" font-weight="800">CODEX USAGE</text>
+      <text x="400" y="170" text-anchor="middle" font-size="38" font-weight="800">INKPULSE</text>
       <text x="400" y="245" text-anchor="middle" font-size="27" font-weight="700">Usage information unavailable</text>
       <text x="400" y="292" text-anchor="middle" font-size="19">${escapeXml(message)}</text>
       <text x="400" y="365" text-anchor="middle" font-size="18" font-weight="700">The server will try again on the next refresh.</text>

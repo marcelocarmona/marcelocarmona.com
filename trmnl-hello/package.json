@@ -1,16 +1,16 @@
 {
-  "name": "trmnl-hello-byos",
-  "version": "2.0.0",
+  "name": "inkpulse",
+  "version": "0.1.0",
   "private": true,
-  "type": "module",
+  "workspaces": [
+    "server"
+  ],
   "scripts": {
-    "start": "node --env-file-if-exists=.env server.mjs",
-    "test": "node --test"
+    "start": "npm run start --workspace=@inkpulse/server",
+    "test": "npm run test --workspace=@inkpulse/server",
+    "test:server": "npm run test --workspace=@inkpulse/server"
   },
   "engines": {
     "node": ">=22.9"
-  },
-  "dependencies": {
-    "sharp": "^0.35.5"
   }
 }

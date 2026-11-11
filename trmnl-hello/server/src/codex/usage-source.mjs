@@ -140,8 +140,8 @@ export function readCodexUsage(options = {}) {
       method: "initialize",
       params: {
         clientInfo: {
-          name: "trmnl_usage_display",
-          title: "TRMNL Usage Display",
+          name: "inkpulse",
+          title: "InkPulse",
           version: "1.0.0",
         },
       },

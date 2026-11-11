@@ -4,8 +4,8 @@ import { createServer } from "node:http";
 import { networkInterfaces } from "node:os";
 import { pathToFileURL } from "node:url";
 
-import { createCodexUsageSource } from "./lib/codex-usage.mjs";
-import { renderUsageScreen } from "./lib/screen.mjs";
+import { createCodexUsageSource } from "./codex/usage-source.mjs";
+import { renderUsageScreen } from "./display/screen.mjs";
 
 const DEFAULT_PORT = 3000;
 const DEFAULT_REFRESH_SECONDS = 300;
@@ -20,7 +20,7 @@ function escapeXml(value) {
     .replaceAll("'", "&apos;");
 }
 
-export { renderUsageScreen as renderScreen } from "./lib/screen.mjs";
+export { renderUsageScreen as renderScreen } from "./display/screen.mjs";
 
 export function findLanAddress() {
   for (const addresses of Object.values(networkInterfaces())) {
@@ -164,7 +164,7 @@ export function createTrmnlServer(options = {}) {
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const { server, port, publicUrl } = createTrmnlServer();
   server.listen(port, "0.0.0.0", () => {
-    console.log("\nFree TRMNL server is running.");
+    console.log("\nInkPulse server is running.");
     console.log(`Preview:       ${publicUrl}`);
     console.log(`Custom server: ${publicUrl}`);
     console.log("Keep this terminal and your Mac awake while the TRMNL uses it.\n");

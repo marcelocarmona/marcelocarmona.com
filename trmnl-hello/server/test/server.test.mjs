@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { createTrmnlServer, renderScreen } from "./server.mjs";
+import { createTrmnlServer, renderScreen } from "../src/index.mjs";
 
 const sampleUsage = {
   fetchedAt: new Date("2026-11-11T03:00:00Z"),

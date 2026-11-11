@@ -1,86 +1,34 @@
-# Codex usage on TRMNL
+# InkPulse
 
-This project displays your remaining Codex/ChatGPT plan usage on an official
-TRMNL device without a paid Private Plugin, plugin ID, or webhook. It shows the
-5-hour and weekly limits, their reset times, the number of available reset
-credits, and the next credit expiration.
+InkPulse is a personal ambient dashboard for the signals that shape your day.
+It is designed for an 800×480 monochrome e-paper display and can grow beyond
+Codex usage into health, development, social, and other daily metrics.
 
-It uses TRMNL's free BYOS (Build Your Own Server) mode and Codex's local,
-read-only app-server interface. It does not store your ChatGPT password, API
-key, session token, or reset-credit identifiers, and it never consumes a reset.
+## Projects
 
-Your Mac must remain powered on, awake, and connected to the same Wi-Fi as the
-TRMNL. The device pulls a new screen from the Mac every five minutes.
+- [`server/`](server/) contains the Node.js data adapters, UI renderer, device
+  API, and—next—the real-time event service.
+- [`firmware/`](firmware/) will contain the ESP32-S3 firmware installed on the
+  Seeed Studio TRMNL 7.5-inch DIY display.
 
-## Start the server
+The server currently renders the working Codex usage dashboard through the
+standard TRMNL BYOS protocol. The firmware project is the next implementation
+milestone and will add persistent Wi-Fi, event-driven updates, and partial
+e-paper refresh.
+
+## Development
+
+Install dependencies and start the server from the repository root:
 
 ```sh
-cd /Users/marcelocarmona/mc/marcelocarmona/trmnl-hello
 npm install
 npm start
 ```
 
-The server automatically finds the Mac's Wi-Fi address. It prints something
-like:
-
-```text
-Preview:       http://192.168.4.21:3000
-Custom server: http://192.168.4.21:3000
-```
-
-Open the Preview URL in a browser to verify the display. If macOS asks whether
-Node can accept incoming connections, choose **Allow**.
-
-## Connect the TRMNL
-
-1. Keep `npm start` running.
-2. Hold the round button on the TRMNL for more than five seconds until the
-   connection instructions appear.
-3. On a phone or computer, connect to the Wi-Fi network named `TRMNL`.
-4. In the setup page, choose **Custom server**.
-5. Select your normal Wi-Fi and enter its password.
-6. Enter the Custom server address printed by `npm start`, for example
-   `http://192.168.4.21:3000`. Do not use `localhost` or `127.0.0.1`.
-7. Finish setup. The server terminal will show requests from the device.
-
-## Configuration
-
-The existing `.env` file can contain:
-
-```env
-TRMNL_TIME_ZONE=America/Los_Angeles
-TRMNL_REFRESH_SECONDS=300
-TRMNL_USAGE_CACHE_SECONDS=60
-```
-
-Restart `npm start` after changing `.env`.
-
-The server normally finds `codex` automatically. If it cannot, add the full
-binary path:
-
-```env
-CODEX_BIN=/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex
-```
-
-Codex must be installed and signed in on the Mac running the server. The local
-app-server interface is experimental, so the Codex adapter is isolated in
-`lib/codex-usage.mjs` in case the protocol changes.
-
-## Architecture
-
-- `lib/codex-usage.mjs` reads and normalizes account usage, caches successful
-  reads, and falls back to the last value after a temporary failure.
-- `lib/screen.mjs` renders normalized data into the 800×480 monochrome BMP.
-- `server.mjs` implements the TRMNL BYOS HTTP endpoints and connects those two
-  layers.
-
-## Return the device to TRMNL cloud
-
-Hold the round button for more than five seconds, connect to the `TRMNL` Wi-Fi,
-choose **Soft reset**, then configure Wi-Fi again without a Custom server.
-
-## Verify the project
+Run all implemented project tests:
 
 ```sh
 npm test
 ```
+
+See [`server/README.md`](server/README.md) for device setup and configuration.

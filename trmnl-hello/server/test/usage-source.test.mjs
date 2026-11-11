@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { createCodexUsageSource, normalizeUsageResponse } from "./codex-usage.mjs";
+import { createCodexUsageSource, normalizeUsageResponse } from "../src/codex/usage-source.mjs";
 
 const rawUsage = {
   ordinaryUsageAllowed: true,
