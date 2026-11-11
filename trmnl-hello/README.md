@@ -1,8 +1,13 @@
-# Hello TRMNL — free local BYOS server
+# Codex usage on TRMNL
 
-This project displays a message, date, and time on an official TRMNL device
-without a paid Private Plugin, plugin ID, or webhook. It uses TRMNL's free BYOS
-(Build Your Own Server) mode and runs entirely on your local Wi-Fi.
+This project displays your remaining Codex/ChatGPT plan usage on an official
+TRMNL device without a paid Private Plugin, plugin ID, or webhook. It shows the
+5-hour and weekly limits, their reset times, the number of available reset
+credits, and the next credit expiration.
+
+It uses TRMNL's free BYOS (Build Your Own Server) mode and Codex's local,
+read-only app-server interface. It does not store your ChatGPT password, API
+key, session token, or reset-credit identifiers, and it never consumes a reset.
 
 Your Mac must remain powered on, awake, and connected to the same Wi-Fi as the
 TRMNL. The device pulls a new screen from the Mac every five minutes.
@@ -38,17 +43,36 @@ Node can accept incoming connections, choose **Allow**.
    `http://192.168.4.21:3000`. Do not use `localhost` or `127.0.0.1`.
 7. Finish setup. The server terminal will show requests from the device.
 
-## Customize the screen
+## Configuration
 
 The existing `.env` file can contain:
 
 ```env
-TRMNL_MESSAGE=Hello from my desk!
 TRMNL_TIME_ZONE=America/Los_Angeles
 TRMNL_REFRESH_SECONDS=300
+TRMNL_USAGE_CACHE_SECONDS=60
 ```
 
 Restart `npm start` after changing `.env`.
+
+The server normally finds `codex` automatically. If it cannot, add the full
+binary path:
+
+```env
+CODEX_BIN=/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex
+```
+
+Codex must be installed and signed in on the Mac running the server. The local
+app-server interface is experimental, so the Codex adapter is isolated in
+`lib/codex-usage.mjs` in case the protocol changes.
+
+## Architecture
+
+- `lib/codex-usage.mjs` reads and normalizes account usage, caches successful
+  reads, and falls back to the last value after a temporary failure.
+- `lib/screen.mjs` renders normalized data into the 800×480 monochrome BMP.
+- `server.mjs` implements the TRMNL BYOS HTTP endpoints and connects those two
+  layers.
 
 ## Return the device to TRMNL cloud
 

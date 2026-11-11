@@ -3,9 +3,28 @@ import test from "node:test";
 
 import { createTrmnlServer, renderScreen } from "./server.mjs";
 
+const sampleUsage = {
+  fetchedAt: new Date("2026-11-11T03:00:00Z"),
+  ordinaryUsageAllowed: true,
+  primary: {
+    label: "5-HOUR LIMIT",
+    remainingPercent: 69,
+    resetsAt: new Date("2026-11-11T05:25:00Z"),
+  },
+  secondary: {
+    label: "WEEKLY LIMIT",
+    remainingPercent: 83,
+    resetsAt: new Date("2026-11-12T08:51:00Z"),
+  },
+  resetCredits: {
+    availableCount: 2,
+    nextExpiresAt: new Date("2026-11-30T19:31:00Z"),
+  },
+};
+
 test("renders an 800x480 monochrome BMP", async () => {
   const bmp = await renderScreen({
-    message: "Hello from the test!",
+    usage: sampleUsage,
     timeZone: "America/Los_Angeles",
     now: new Date("2026-11-11T02:30:00Z"),
   });
@@ -21,7 +40,7 @@ test("serves the TRMNL setup, display, and image endpoints", async (context) => 
   const { server } = createTrmnlServer({
     port: 3000,
     publicUrl: "http://127.0.0.1:3000",
-    message: "Test screen",
+    getUsage: async () => sampleUsage,
   });
 
   await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
