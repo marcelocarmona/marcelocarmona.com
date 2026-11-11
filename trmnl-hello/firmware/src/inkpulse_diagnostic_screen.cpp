@@ -43,6 +43,16 @@ public:
 
 BbEpaperCanvas canvas;
 
+bool canRefreshDirtyRegions(inkpulse::RefreshMode refresh, size_t dirty_region_count) {
+  return refresh == inkpulse::RefreshMode::Partial && dirty_region_count > 0 && bCanDoPartial &&
+         bbep.hasPartialRefresh() && bbep.getMemoryMode() == BB_MODE_1BPP &&
+         bbep.getRotation() == 0;
+}
+
+size_t fullFrameByteCount() {
+  return static_cast<size_t>((bbep.width() + 7u) / 8u) * bbep.height();
+}
+
 } // namespace
 
 bool inkpulse_diagnostic_screen_begin() {
@@ -54,11 +64,53 @@ void inkpulse_diagnostic_screen_draw(const inkpulse::DiagnosticScreenModel &scre
   inkpulse::renderDiagnosticScreen(canvas, screen);
 }
 
-uint32_t inkpulse_diagnostic_screen_refresh(inkpulse::RefreshMode refresh) {
+InkPulseRefreshStats inkpulse_diagnostic_screen_refresh(
+    inkpulse::RefreshMode refresh, const inkpulse::DirtyRegion *dirty_regions,
+    size_t dirty_region_count) {
   const int refresh_mode = refresh == inkpulse::RefreshMode::Full ? REFRESH_FULL : REFRESH_PARTIAL;
   const uint32_t started_ms = millis();
+
+  if (dirty_regions != nullptr && canRefreshDirtyRegions(refresh, dirty_region_count)) {
+    const inkpulse::DisplaySize display = {
+      static_cast<uint16_t>(bbep.width()),
+      static_cast<uint16_t>(bbep.height()),
+    };
+    size_t bytes_written = 0;
+    size_t regions_written = 0;
+    for (size_t index = 0; index < dirty_region_count; ++index) {
+      const inkpulse::DirtyRegion region = inkpulse::prepareDirtyRegion(dirty_regions[index], display);
+      if (inkpulse::isEmpty(region)) {
+        continue;
+      }
+      bbep.writeRegion(region.x, region.y, region.width, region.height, PLANE_0);
+      bytes_written += inkpulse::dirtyRegionByteCount(region);
+      ++regions_written;
+    }
+
+    if (regions_written > 0) {
+      const uint32_t transfer_ms = millis() - started_ms;
+      const uint32_t panel_started_ms = millis();
+      bbep.refresh(REFRESH_PARTIAL, true);
+      const uint32_t panel_ms = millis() - panel_started_ms;
+      return {
+        millis() - started_ms,
+        transfer_ms,
+        panel_ms,
+        bytes_written,
+        InkPulseRefreshPath::DirtyRegions,
+      };
+    }
+  }
+
   display_update_epaper(refresh_mode, true, true, PLANE_0);
-  return millis() - started_ms;
+  const uint32_t total_ms = millis() - started_ms;
+  return {
+    total_ms,
+    static_cast<uint32_t>(bbep.dataTime()),
+    static_cast<uint32_t>(bbep.opTime()),
+    fullFrameByteCount(),
+    InkPulseRefreshPath::FullFrame,
+  };
 }
 
 InkPulseFramebufferView inkpulse_diagnostic_framebuffer() {

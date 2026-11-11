@@ -19,6 +19,14 @@ inkpulse::DiagnosticState state;
 InkPulseDiagnosticCapture capture;
 bool diagnostic_ready = false;
 
+// Only these values change between normal KEY3 updates. Keeping the regions
+// explicit makes the transfer predictable and avoids an expensive framebuffer
+// diff on the microcontroller.
+constexpr inkpulse::DirtyRegion dynamic_regions[] = {
+  {64, 224, 384, 104},  // press count
+  {512, 216, 224, 152}, // refresh time and mode
+};
+
 void render_screen(inkpulse::RefreshMode refresh) {
   const inkpulse::DiagnosticScreenModel screen = {
     state.pressCount(),
@@ -26,11 +34,17 @@ void render_screen(inkpulse::RefreshMode refresh) {
     refresh,
   };
   inkpulse_diagnostic_screen_draw(screen);
-  const uint32_t elapsed_ms = inkpulse_diagnostic_screen_refresh(refresh);
-  state.recordRefresh(elapsed_ms);
-  Serial.printf("[InkPulse] %s refresh completed in %lu ms; KEY3 count=%lu\n",
-                refresh == inkpulse::RefreshMode::Full ? "full" : "partial", elapsed_ms,
-                state.pressCount());
+  const InkPulseRefreshStats stats = inkpulse_diagnostic_screen_refresh(
+      refresh, dynamic_regions, sizeof(dynamic_regions) / sizeof(dynamic_regions[0]));
+  state.recordRefresh(stats.total_ms);
+  Serial.printf(
+      "[InkPulse] %s refresh via %s: total=%lu ms, transfer=%lu ms, panel=%lu ms, "
+      "bytes=%lu; KEY3 count=%lu\n",
+      refresh == inkpulse::RefreshMode::Full ? "full" : "partial",
+      stats.path == InkPulseRefreshPath::DirtyRegions ? "regions" : "full-frame",
+      static_cast<unsigned long>(stats.total_ms), static_cast<unsigned long>(stats.transfer_ms),
+      static_cast<unsigned long>(stats.panel_ms), static_cast<unsigned long>(stats.bytes_written),
+      static_cast<unsigned long>(state.pressCount()));
 }
 
 } // namespace

@@ -1,5 +1,6 @@
 #include <inkpulse_canvas.h>
 #include <inkpulse_diagnostic_renderer.h>
+#include <inkpulse_dirty_region.h>
 #include <inkpulse_frame_protocol.h>
 #include <unity.h>
 
@@ -88,11 +89,44 @@ void test_frame_size_uses_stride_and_height() {
   TEST_ASSERT_EQUAL_UINT32(48000, inkpulse::frameByteCount(100, 480));
 }
 
+void test_dirty_region_is_clipped_and_byte_aligned() {
+  const inkpulse::DirtyRegion prepared =
+      inkpulse::prepareDirtyRegion({13, 470, 800, 20}, {800, 480});
+
+  TEST_ASSERT_EQUAL_UINT16(8, prepared.x);
+  TEST_ASSERT_EQUAL_UINT16(470, prepared.y);
+  TEST_ASSERT_EQUAL_UINT16(792, prepared.width);
+  TEST_ASSERT_EQUAL_UINT16(10, prepared.height);
+  TEST_ASSERT_EQUAL_UINT32(990, inkpulse::dirtyRegionByteCount(prepared));
+}
+
+void test_dirty_region_outside_display_becomes_empty() {
+  const inkpulse::DirtyRegion prepared =
+      inkpulse::prepareDirtyRegion({800, 10, 16, 16}, {800, 480});
+
+  TEST_ASSERT_TRUE(inkpulse::isEmpty(prepared));
+  TEST_ASSERT_EQUAL_UINT32(0, inkpulse::dirtyRegionByteCount(prepared));
+}
+
+void test_dirty_region_preserves_aligned_geometry() {
+  const inkpulse::DirtyRegion prepared =
+      inkpulse::prepareDirtyRegion({64, 224, 384, 104}, {800, 480});
+
+  TEST_ASSERT_EQUAL_UINT16(64, prepared.x);
+  TEST_ASSERT_EQUAL_UINT16(224, prepared.y);
+  TEST_ASSERT_EQUAL_UINT16(384, prepared.width);
+  TEST_ASSERT_EQUAL_UINT16(104, prepared.height);
+  TEST_ASSERT_EQUAL_UINT32(4992, inkpulse::dirtyRegionByteCount(prepared));
+}
+
 int main(int argc, char **argv) {
   UNITY_BEGIN();
   RUN_TEST(test_renderer_emits_complete_frame);
   RUN_TEST(test_renderer_uses_waiting_before_first_measurement);
   RUN_TEST(test_frame_crc_matches_standard_vector);
   RUN_TEST(test_frame_size_uses_stride_and_height);
+  RUN_TEST(test_dirty_region_is_clipped_and_byte_aligned);
+  RUN_TEST(test_dirty_region_outside_display_becomes_empty);
+  RUN_TEST(test_dirty_region_preserves_aligned_geometry);
   return UNITY_END();
 }
