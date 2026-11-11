@@ -19,6 +19,13 @@ The next firmware-only milestone is a safe hardware validation build that:
 - measures full and partial refresh duration; and
 - preserves a documented route back to the official firmware.
 
+That validation mode now has its own `inkpulse_7in5_diagnostic` target. It is
+kept separate from the normal runtime and does not initialize Wi-Fi, call an
+API, or alter the saved network credentials. On boot it draws a local test
+screen; each debounced KEY3 press increments a counter and starts a refresh in
+about 30 ms, before the physical e-paper update time. It uses partial refreshes
+for presses 1–7 and a full refresh on every eighth press to limit ghosting.
+
 After that hardware baseline is proven, later milestones can add:
 
 - a persistent connection to the InkPulse server when fast mode is enabled;
@@ -42,6 +49,16 @@ Compile the exact InkPulse board target:
 ```sh
 npm run firmware:build
 ```
+
+Compile the offline hardware diagnostic target:
+
+```sh
+npm run firmware:build:diagnostic
+```
+
+Its complete flash image is generated at
+`.pio/build/inkpulse_7in5_diagnostic/FW1.8.19-inkpulse_7in5_diagnostic.bin`.
+Building this file does not modify a connected board.
 
 The `inkpulse_7in5` PlatformIO environment extends the official
 `TRMNL_7inch5_OG_DIY_Kit` target. Until the fast-mode state machine is added, it

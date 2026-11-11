@@ -1,5 +1,15 @@
 #include <Arduino.h>
 
+#ifdef INKPULSE_DIAGNOSTIC
+
+#include "inkpulse_diagnostic.h"
+
+void setup() { inkpulse_diagnostic_setup(); }
+
+void loop() { inkpulse_diagnostic_loop(); }
+
+#else
+
 #include "bl.h"
 #include "esp_ota_ops.h"
 #include "power.h"
@@ -79,3 +89,5 @@ void setup() {
 #endif // !BOARD_TRMNL_X
 
 void loop() { bl_process(); }
+
+#endif // INKPULSE_DIAGNOSTIC

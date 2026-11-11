@@ -12,6 +12,7 @@
     "test:all": "npm run test:server && npm run firmware:test",
     "firmware:setup": "python3 -m venv firmware/.venv && firmware/.venv/bin/python -m pip install -r firmware/requirements.txt",
     "firmware:build": "firmware/.venv/bin/platformio run --project-dir firmware --environment inkpulse_7in5",
+    "firmware:build:diagnostic": "firmware/.venv/bin/platformio run --project-dir firmware --environment inkpulse_7in5_diagnostic",
     "firmware:test": "cd firmware && .venv/bin/platformio test --environment native"
   },
   "engines": {

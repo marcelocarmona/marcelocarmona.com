@@ -3,4 +3,5 @@ node_modules/
 **/.pio/
 **/.venv/
 .vscode/
+firmware/backups/
 .DS_Store
