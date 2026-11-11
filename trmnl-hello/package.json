@@ -9,11 +9,13 @@
     "start": "npm run start --workspace=@inkpulse/server",
     "test": "npm run test --workspace=@inkpulse/server",
     "test:server": "npm run test --workspace=@inkpulse/server",
-    "test:all": "npm run test:server && npm run firmware:test",
+    "test:all": "npm run test:server && npm run firmware:test && npm run test:tools",
+    "test:tools": "firmware/.venv/bin/python -m unittest discover -s tools/tests -p 'test_*.py'",
     "firmware:setup": "python3 -m venv firmware/.venv && firmware/.venv/bin/python -m pip install -r firmware/requirements.txt",
     "firmware:build": "firmware/.venv/bin/platformio run --project-dir firmware --environment inkpulse_7in5",
     "firmware:build:diagnostic": "firmware/.venv/bin/platformio run --project-dir firmware --environment inkpulse_7in5_diagnostic",
-    "firmware:test": "cd firmware && .venv/bin/platformio test --environment native"
+    "firmware:test": "cd firmware && .venv/bin/platformio test --environment native",
+    "screen:capture": "firmware/.venv/bin/python tools/capture_screen.py"
   },
   "engines": {
     "node": ">=22.9"

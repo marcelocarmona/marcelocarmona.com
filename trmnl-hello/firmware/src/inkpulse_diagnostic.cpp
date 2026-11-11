@@ -11,26 +11,25 @@
 #include <inkpulse_diagnostic_state.h>
 #include <pins.h>
 
+#include "inkpulse_diagnostic_capture.h"
+
 namespace {
 
 inkpulse::DiagnosticState state;
+InkPulseDiagnosticCapture capture;
 bool diagnostic_ready = false;
 
-InkPulseDiagnosticRefresh screen_refresh(inkpulse::RefreshMode refresh) {
-  return refresh == inkpulse::RefreshMode::Full ? InkPulseDiagnosticRefresh::Full
-                                                : InkPulseDiagnosticRefresh::Partial;
-}
-
-void render_screen(InkPulseDiagnosticRefresh refresh) {
-  InkPulseDiagnosticScreen screen = {
+void render_screen(inkpulse::RefreshMode refresh) {
+  const inkpulse::DiagnosticScreenModel screen = {
     state.pressCount(),
     state.lastRefreshMs(),
     refresh,
   };
-  const uint32_t elapsed_ms = inkpulse_diagnostic_screen_render(screen);
+  inkpulse_diagnostic_screen_draw(screen);
+  const uint32_t elapsed_ms = inkpulse_diagnostic_screen_refresh(refresh);
   state.recordRefresh(elapsed_ms);
   Serial.printf("[InkPulse] %s refresh completed in %lu ms; KEY3 count=%lu\n",
-                refresh == InkPulseDiagnosticRefresh::Full ? "full" : "partial", elapsed_ms,
+                refresh == inkpulse::RefreshMode::Full ? "full" : "partial", elapsed_ms,
                 state.pressCount());
 }
 
@@ -64,9 +63,10 @@ void inkpulse_diagnostic_setup() {
     return;
   }
 
-  render_screen(InkPulseDiagnosticRefresh::Full);
+  render_screen(inkpulse::RefreshMode::Full);
   diagnostic_ready = true;
   Serial.printf("[InkPulse] Ready; KEY3 is GPIO %u and is sampled every loop\n", pDevice->interrupt_pin);
+  Serial.println("[InkPulse] Send 'INKPULSE SCREENSHOT' over USB serial to capture the framebuffer");
 }
 
 void inkpulse_diagnostic_loop() {
@@ -74,9 +74,10 @@ void inkpulse_diagnostic_loop() {
     delay(100);
     return;
   }
+  capture.poll(inkpulse_diagnostic_framebuffer());
   const bool pressed = digitalRead(pDevice->interrupt_pin) == LOW;
   if (state.updateButton(pressed, millis())) {
-    render_screen(screen_refresh(state.refreshMode()));
+    render_screen(state.refreshMode());
   }
   delay(5);
 }

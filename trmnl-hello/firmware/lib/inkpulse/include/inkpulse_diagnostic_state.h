@@ -1,10 +1,9 @@
 #pragma once
 
+#include <inkpulse_refresh_mode.h>
 #include <stdint.h>
 
 namespace inkpulse {
-
-enum class RefreshMode { Full, Partial };
 
 class DiagnosticState {
 public:

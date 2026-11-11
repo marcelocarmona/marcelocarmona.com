@@ -60,6 +60,30 @@ Its complete flash image is generated at
 `.pio/build/inkpulse_7in5_diagnostic/FW1.8.19-inkpulse_7in5_diagnostic.bin`.
 Building this file does not modify a connected board.
 
+## Display pipeline and screenshots
+
+Diagnostic screens use a small layered display pipeline:
+
+1. `DiagnosticScreenModel` contains display data only.
+2. `renderDiagnosticScreen` draws that model through the panel-independent
+   `Canvas` interface.
+3. The ESP32 adapter owns the bb_epaper framebuffer and panel refresh.
+4. The diagnostic capture service can export the completed framebuffer over
+   USB without coupling transport code to the renderer.
+
+The versioned capture protocol includes the image dimensions, row stride, byte
+count, and CRC32. It is compiled only in the diagnostic target. From the
+monorepo root, capture the framebuffer with:
+
+```sh
+npm run screen:capture
+```
+
+The local tool validates the transfer and writes a PNG under the Git-ignored
+`artifacts/screenshots/` directory. A framebuffer capture verifies exact
+rendered pixels; use a physical photo separately to assess panel ghosting and
+contrast.
+
 The `inkpulse_7in5` PlatformIO environment extends the official
 `TRMNL_7inch5_OG_DIY_Kit` target. Until the fast-mode state machine is added, it
 deliberately preserves the upstream runtime behavior.

@@ -4,4 +4,5 @@ node_modules/
 **/.venv/
 .vscode/
 firmware/backups/
+artifacts/screenshots/
 .DS_Store

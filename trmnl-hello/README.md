@@ -39,8 +39,23 @@ npm run firmware:build
 npm run firmware:test
 ```
 
-After the firmware environment is installed, run both project suites with
+After the firmware environment is installed, run all project suites with
 `npm run test:all`.
+
+When the diagnostic firmware is running over USB, capture its exact 800×480
+framebuffer as a PNG with:
+
+```sh
+npm run screen:capture
+```
+
+The command auto-detects a single ESP32-S3 USB port, validates the transfer
+with CRC32, and writes the Git-ignored image to `artifacts/screenshots/`. Pass
+an explicit port when more than one development board is connected:
+
+```sh
+npm run screen:capture -- --port /dev/cu.usbmodem2101
+```
 
 See [`server/README.md`](server/README.md) for device setup and configuration,
 and [`firmware/README.md`](firmware/README.md) for the firmware target and safe
