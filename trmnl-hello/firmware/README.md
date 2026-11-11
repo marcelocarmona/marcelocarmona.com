@@ -71,14 +71,15 @@ Diagnostic screens use a small layered display pipeline:
 4. The diagnostic capture service can export the completed framebuffer over
    USB without coupling transport code to the renderer.
 
-KEY3 partial updates use two explicit dirty regions for the changing counter,
+KEY3 updates declare two explicit dirty regions for the changing counter,
 timing, and mode values. The panel adapter clips those rectangles, aligns them
-to one-bit byte boundaries, and transfers only 9,248 bytes instead of the
-48,000-byte framebuffer when the panel supports region writes. Full refreshes,
-unsupported panels, invalid orientation, or an unavailable previous panel
-image automatically use the existing full-frame path. Serial timing separates
-framebuffer transfer time from the physical panel operation so optimization
-work can target the actual bottleneck.
+to one-bit byte boundaries, and uses them only when a controller supports safe
+single-plane regional updates. UC81xx panels, including the current 7.5-inch
+InkPulse hardware, require coordinated old and new planes and therefore use the
+existing full-frame partial-refresh path. Full refreshes, unsupported panels,
+invalid orientation, or an unavailable previous panel image use that same safe
+fallback. Serial timing separates framebuffer transfer time from the physical
+panel operation so optimization work can target the actual bottleneck.
 
 The versioned capture protocol includes the image dimensions, row stride, byte
 count, and CRC32. It is compiled only in the diagnostic target. From the

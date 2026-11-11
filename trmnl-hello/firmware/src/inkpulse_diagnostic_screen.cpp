@@ -45,6 +45,10 @@ BbEpaperCanvas canvas;
 
 bool canRefreshDirtyRegions(inkpulse::RefreshMode refresh, size_t dirty_region_count) {
   return refresh == inkpulse::RefreshMode::Partial && dirty_region_count > 0 && bCanDoPartial &&
+         // UC81xx differential updates need coordinated old and new planes.
+         // InkPulse currently owns only the new framebuffer, so a region write
+         // would run a refresh cycle without producing a visible change.
+         bbep.getChip() != BBEP_CHIP_UC81xx &&
          bbep.hasPartialRefresh() && bbep.getMemoryMode() == BB_MODE_1BPP &&
          bbep.getRotation() == 0;
 }
