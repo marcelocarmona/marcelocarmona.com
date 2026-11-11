@@ -24,23 +24,23 @@ void renderDiagnosticScreen(Canvas &canvas, const DiagnosticScreenModel &screen)
   canvas.clear();
   canvas.drawText("INKPULSE", 48, 62, TextStyle::Value);
   canvas.drawText("DISPLAY RESPONSE LAB", 48, 100, TextStyle::Label);
-  canvas.drawText("OFFLINE", 654, 82, TextStyle::Label);
+  canvas.drawText("OFFLINE", 752, 82, TextStyle::Label, TextAlign::Right);
   canvas.drawHorizontalLine(48, 124, 704, 3);
 
-  canvas.drawRoundRect(48, 158, 440, 220, 18);
-  canvas.drawText("KEY3 INPUT", 78, 204, TextStyle::Label);
-  canvas.drawText(press_count, 78, 286, TextStyle::Value);
-  canvas.drawText("PRESS COUNT", 78, 342, TextStyle::Label);
+  canvas.drawRoundRect(48, 158, 416, 220, 18);
+  canvas.drawText("KEY3 INPUT", 80, 204, TextStyle::Label);
+  canvas.drawText(press_count, 80, 286, TextStyle::Value);
+  canvas.drawText("PRESS COUNT", 80, 342, TextStyle::Label);
 
-  canvas.drawRoundRect(520, 158, 232, 220, 18);
-  canvas.drawText("REFRESH", 546, 204, TextStyle::Label);
-  canvas.drawText(refresh_time, 546, 256, TextStyle::Value);
-  canvas.drawText("MODE", 546, 314, TextStyle::Label);
-  canvas.drawText(refreshName(screen.refresh), 546, 354, TextStyle::Value);
+  canvas.drawRoundRect(496, 158, 256, 220, 18);
+  canvas.drawText("REFRESH", 524, 204, TextStyle::Label);
+  canvas.drawText(refresh_time, 524, 256, TextStyle::Value);
+  canvas.drawText("MODE", 524, 314, TextStyle::Label);
+  canvas.drawText(refreshName(screen.refresh), 524, 354, TextStyle::Value);
 
   canvas.drawHorizontalLine(48, 408, 704, 2);
   canvas.drawText("LOCAL TEST  |  WI-FI OFF", 48, 446, TextStyle::Label);
-  canvas.drawText("KEY3: GO", 626, 446, TextStyle::Label);
+  canvas.drawText("KEY3: GO", 752, 446, TextStyle::Label, TextAlign::Right);
 }
 
 } // namespace inkpulse

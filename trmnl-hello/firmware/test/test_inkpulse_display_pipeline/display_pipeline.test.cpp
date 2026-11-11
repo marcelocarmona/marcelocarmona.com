@@ -13,14 +13,16 @@ struct TextCommand {
   int x;
   int y;
   inkpulse::TextStyle style;
+  inkpulse::TextAlign align;
 };
 
 class RecordingCanvas final : public inkpulse::Canvas {
 public:
   void clear() override { clear_count++; }
 
-  void drawText(const char *text, int x, int y, inkpulse::TextStyle style) override {
-    texts.push_back({text, x, y, style});
+  void drawText(const char *text, int x, int y, inkpulse::TextStyle style,
+                inkpulse::TextAlign align) override {
+    texts.push_back({text, x, y, style, align});
   }
 
   void drawHorizontalLine(int, int, int, int) override { line_count++; }
@@ -59,6 +61,12 @@ void test_renderer_emits_complete_frame() {
   TEST_ASSERT_NOT_NULL(canvas.find("REFRESH"));
   TEST_ASSERT_NOT_NULL(canvas.find("MODE"));
   TEST_ASSERT_NOT_NULL(canvas.find("KEY3: GO"));
+  TEST_ASSERT_EQUAL_INT(752, canvas.find("OFFLINE")->x);
+  TEST_ASSERT_TRUE(canvas.find("OFFLINE")->align == inkpulse::TextAlign::Right);
+  TEST_ASSERT_EQUAL_INT(524, canvas.find("1708 ms")->x);
+  TEST_ASSERT_EQUAL_INT(524, canvas.find("PARTIAL")->x);
+  TEST_ASSERT_EQUAL_INT(752, canvas.find("KEY3: GO")->x);
+  TEST_ASSERT_TRUE(canvas.find("KEY3: GO")->align == inkpulse::TextAlign::Right);
 }
 
 void test_renderer_uses_waiting_before_first_measurement() {

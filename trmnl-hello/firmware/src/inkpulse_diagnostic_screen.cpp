@@ -19,9 +19,17 @@ public:
     bbep.setTextColor(BBEP_BLACK, BBEP_WHITE);
   }
 
-  void drawText(const char *text, int x, int y, inkpulse::TextStyle style) override {
+  void drawText(const char *text, int x, int y, inkpulse::TextStyle style,
+                inkpulse::TextAlign align) override {
     bbep.setFont(style == inkpulse::TextStyle::Label ? Inter_18 : Roboto_Black_24);
-    bbep.drawString(text, x, y);
+    int draw_x = x;
+    if (align == inkpulse::TextAlign::Right) {
+      BB_RECT bounds = {};
+      bbep.setCursor(0, y);
+      bbep.getStringBox(text, &bounds);
+      draw_x -= bounds.w;
+    }
+    bbep.drawString(text, draw_x, y);
   }
 
   void drawHorizontalLine(int x, int y, int width, int thickness) override {
