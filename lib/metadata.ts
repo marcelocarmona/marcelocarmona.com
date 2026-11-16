@@ -11,6 +11,7 @@ import {
   getFeedPath,
   getGuidesPath,
   getHomePath,
+  getHowIWorkPath,
   getPostPath,
   getPrivacyPath,
   getTagPath,
@@ -27,7 +28,10 @@ type VideoPost = ContentFrontMatter & { video: VideoFrontMatter }
  * the copy, canonical URL, hreflang links, Open Graph locales and feeds.
  */
 export type PageReference =
-  | { kind: 'home' | 'tags' | 'about' | 'book' | 'guides' | 'contact' | 'privacy'; locale: Locale }
+  | {
+      kind: 'home' | 'tags' | 'about' | 'book' | 'guides' | 'howIWork' | 'contact' | 'privacy'
+      locale: Locale
+    }
   | { kind: 'blog'; locale: Locale; page?: number }
   | {
       kind: 'tag'
@@ -141,6 +145,8 @@ function listingPath(page: ListingPage, locale: Locale): string {
       return getBookPath(locale)
     case 'guides':
       return getGuidesPath(locale)
+    case 'howIWork':
+      return getHowIWorkPath(locale)
     case 'contact':
       return getContactPath(locale)
     case 'privacy':

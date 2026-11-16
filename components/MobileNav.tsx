@@ -23,7 +23,7 @@ const MobileNav = ({ locale = 'en' }: { locale?: LocaleInput }) => {
   }
 
   return (
-    <div className="sm:hidden">
+    <div className="md:hidden">
       <button
         type="button"
         className="ml-1 mr-1 size-8 rounded-sm py-1"

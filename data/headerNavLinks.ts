@@ -3,6 +3,7 @@ import {
   getBlogPath,
   getBookPath,
   getGuidesPath,
+  getHowIWorkPath,
   getTagsPath,
 } from '@/lib/i18n/routes'
 import { getUiCopy } from '@/lib/i18n/ui'
@@ -17,6 +18,7 @@ export function getHeaderNavLinks(locale: LocaleInput): HeaderNavLink[] {
     { href: getGuidesPath(locale), title: navigation.guides },
     { href: getTagsPath(locale), title: navigation.tags },
     { href: getBookPath(locale), title: navigation.book },
+    { href: getHowIWorkPath(locale), title: navigation.howIWork },
     { href: getAboutPath(locale), title: navigation.about },
   ]
 }

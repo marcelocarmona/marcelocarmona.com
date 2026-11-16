@@ -36,6 +36,11 @@ const esUi = {
       title: 'Guías',
       description: 'Rutas de aprendizaje sobre React, arquitectura frontend y rendimiento web.',
     },
+    howIWork: {
+      title: 'Cómo trabajo',
+      description:
+        'Cómo Marcelo Carmona aborda el trabajo remoto, la comunicación, la concentración y una práctica de ingeniería sostenible.',
+    },
     watch: {
       // lib/video.ts falls back to "Video" for untitled videos; don't render "Video (Video)".
       title: (videoTitle: string) =>
@@ -68,6 +73,7 @@ const esUi = {
     blog: 'Blog',
     book: 'Reservar',
     guides: 'Guías',
+    howIWork: 'Cómo trabajo',
     tags: 'Etiquetas',
   },
   post: {

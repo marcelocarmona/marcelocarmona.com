@@ -9,6 +9,7 @@ import {
   getFeedPath,
   getGuidesPath,
   getHomePath,
+  getHowIWorkPath,
   getPrivacyPath,
   getTagsPath,
 } from '@/lib/i18n/routes'
@@ -82,6 +83,20 @@ export const PUBLIC_STATIC_PAGES = [
     locale: 'en',
     path: getAboutPath('en'),
     description: 'Professional profile for Marcelo Carmona.',
+  },
+  {
+    title: 'How I Work',
+    locale: 'en',
+    path: getHowIWorkPath('en'),
+    description:
+      'How Marcelo approaches remote work, communication, focus, and sustainable engineering.',
+  },
+  {
+    title: 'Cómo trabajo',
+    locale: 'es',
+    path: getHowIWorkPath('es'),
+    description:
+      'Cómo Marcelo aborda el trabajo remoto, la comunicación y una práctica de ingeniería sostenible.',
   },
   {
     title: 'Acerca',

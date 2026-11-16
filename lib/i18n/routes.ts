@@ -79,6 +79,11 @@ export function getAboutPath(locale: LocaleInput): string {
   return prefix ? `${prefix}/about` : '/about'
 }
 
+export function getHowIWorkPath(locale: LocaleInput): string {
+  const prefix = getLocalePrefix(locale)
+  return prefix ? `${prefix}/how-i-work` : '/how-i-work'
+}
+
 export function getContactPath(locale: LocaleInput): string {
   const prefix = getLocalePrefix(locale)
   return prefix ? `${prefix}/contact` : '/contact'

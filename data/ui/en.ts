@@ -35,6 +35,11 @@ const enUi = {
       title: 'Guides',
       description: 'Topic hubs for React, frontend architecture, and platform engineering.',
     },
+    howIWork: {
+      title: 'How I Work',
+      description:
+        'How Marcelo Carmona approaches remote work, communication, focus, and sustainable software engineering.',
+    },
     watch: {
       // lib/video.ts falls back to "Video" for untitled videos; don't render "Video (Video)".
       title: (videoTitle: string) =>
@@ -67,6 +72,7 @@ const enUi = {
     blog: 'Blog',
     book: 'Book',
     guides: 'Guides',
+    howIWork: 'How I Work',
     tags: 'Tags',
   },
   post: {

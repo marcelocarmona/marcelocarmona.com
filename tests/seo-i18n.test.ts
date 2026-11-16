@@ -1,4 +1,4 @@
-import { existsSync } from 'fs'
+import { existsSync, readFileSync } from 'fs'
 import path from 'path'
 import { describe, expect, it } from 'vitest'
 
@@ -11,6 +11,7 @@ import {
   getBookPath,
   getContactPath,
   getGuidesPath,
+  getHowIWorkPath,
   getPrivacyPath,
   getPostPath,
   getWatchPath,
@@ -32,12 +33,14 @@ describe('localized route helpers', () => {
     expect(getBookPath('en')).toBe('/book')
     expect(getContactPath('en')).toBe('/contact')
     expect(getGuidesPath('en')).toBe('/guides')
+    expect(getHowIWorkPath('en')).toBe('/how-i-work')
     expect(getPrivacyPath('en')).toBe('/privacy')
 
     expect(getAboutPath('es')).toBe('/es/about')
     expect(getBookPath('es')).toBe('/es/book')
     expect(getContactPath('es')).toBe('/es/contact')
     expect(getGuidesPath('es')).toBe('/es/guides')
+    expect(getHowIWorkPath('es')).toBe('/es/how-i-work')
     expect(getPrivacyPath('es')).toBe('/es/privacy')
   })
 
@@ -59,8 +62,20 @@ describe('localized route helpers', () => {
       '/es/guides',
       '/es/tags',
       '/es/book',
+      '/es/how-i-work',
       '/es/about',
     ])
+  })
+})
+
+describe('How I Work page copy', () => {
+  it('keeps dash punctuation out of the authored copy', () => {
+    const source = readFileSync(
+      path.join(process.cwd(), 'app', '_shared', 'HowIWorkPage.tsx'),
+      'utf8'
+    )
+
+    expect(source).not.toMatch(/[—–]/)
   })
 })
 
@@ -194,6 +209,7 @@ describe('localized metadata for every page kind', () => {
     [{ kind: 'about', locale: 'en' }, '/about', '/es/about'],
     [{ kind: 'book', locale: 'en' }, '/book', '/es/book'],
     [{ kind: 'guides', locale: 'en' }, '/guides', '/es/guides'],
+    [{ kind: 'howIWork', locale: 'en' }, '/how-i-work', '/es/how-i-work'],
     [{ kind: 'contact', locale: 'en' }, '/contact', '/es/contact'],
     [{ kind: 'privacy', locale: 'en' }, '/privacy', '/es/privacy'],
   ]
@@ -282,6 +298,8 @@ describe('sitemap', () => {
     expect(urls).toContain(`${siteUrl}/es/contact`)
     expect(urls).toContain(`${siteUrl}/es/privacy`)
     expect(urls).toContain(`${siteUrl}/es/guides`)
+    expect(urls).toContain(`${siteUrl}/how-i-work`)
+    expect(urls).toContain(`${siteUrl}/es/how-i-work`)
     expect(urls).toContain(`${siteUrl}/es/comentarios-en-jsx`)
     expect(urls).toContain(`${siteUrl}/es/watch/creando-observables-desde-cero`)
 
