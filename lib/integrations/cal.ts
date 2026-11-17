@@ -89,6 +89,48 @@ function ensureCalLoader(): CalApi | null {
   return window.Cal
 }
 
+let calEmbedPromise: Promise<CalApi> | null = null
+
+// Resolves once embed.js has run. Calls made after that execute immediately instead of
+// being queued, so callers can check the DOM is still there before mounting.
+export function loadCalEmbed(): Promise<CalApi> {
+  const Cal = ensureCalLoader()
+  if (!Cal) {
+    return Promise.reject(new Error('Cal embed loader unavailable'))
+  }
+
+  if ((Cal as CalApi & { instance?: unknown }).instance) {
+    return Promise.resolve(Cal)
+  }
+
+  if (!calEmbedPromise) {
+    calEmbedPromise = new Promise<CalApi>((resolve, reject) => {
+      Cal.q = Cal.q || []
+      Cal.ns = Cal.ns || {}
+
+      const script = document.createElement('script')
+      script.src = CAL_SCRIPT_SRC
+      script.async = true
+      script.addEventListener('load', () => resolve(Cal), { once: true })
+      script.addEventListener(
+        'error',
+        () => {
+          calEmbedPromise = null
+          script.remove()
+          Cal.loaded = false
+          reject(new Error('Cal embed script failed to load'))
+        },
+        { once: true }
+      )
+      // Stops the queue stub from injecting a second copy of embed.js.
+      Cal.loaded = true
+      document.head.appendChild(script)
+    })
+  }
+
+  return calEmbedPromise
+}
+
 export function mountCalInline({
   calLink,
   elementOrSelector,

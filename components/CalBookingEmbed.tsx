@@ -6,41 +6,56 @@ import siteMetadata from '@/data/siteMetadata'
 import { logEvent } from '@/components/analytics/GoogleAnalytics'
 import Link from '@/components/Link'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { mountCalInline, normalizeCalLink } from '@/lib/integrations/cal'
-
-const CAL_CONTAINER_ID = 'cal-booking-inline'
+import { loadCalEmbed, mountCalInline, normalizeCalLink } from '@/lib/integrations/cal'
 
 export default function CalBookingEmbed({ calUrl = siteMetadata.calCom }: { calUrl?: string }) {
   const [hasEmbedError, setHasEmbedError] = useState(false)
-  const didInitRef = useRef(false)
+  const containerRef = useRef<HTMLDivElement>(null)
   const hostedCalUrl = calUrl || siteMetadata.calCom || 'https://cal.com'
 
   const calLink = useMemo(() => normalizeCalLink(hostedCalUrl), [hostedCalUrl])
 
   useEffect(() => {
-    if (didInitRef.current || !calLink || typeof window === 'undefined') {
+    if (!calLink) {
       return
     }
 
-    try {
-      setHasEmbedError(false)
-      mountCalInline({
-        calLink,
-        elementOrSelector: `#${CAL_CONTAINER_ID}`,
-        layout: 'month_view',
-        theme: 'auto',
-        onReady: () => {
-          logEvent('cal_embed_ready', 'cal.com', calLink)
-        },
-        onBookingSuccess: () => {
-          logEvent('cal_booking_success', 'cal.com', calLink, 1)
-        },
+    let cancelled = false
+    setHasEmbedError(false)
+
+    // Mount only after embed.js has loaded; if the user already left the page,
+    // there is no container and a queued inline() call would throw inside Cal.
+    loadCalEmbed()
+      .then(() => {
+        const container = containerRef.current
+        if (cancelled || !container) {
+          return
+        }
+
+        mountCalInline({
+          calLink,
+          elementOrSelector: container,
+          layout: 'month_view',
+          theme: 'auto',
+          onReady: () => {
+            logEvent('cal_embed_ready', 'cal.com', calLink)
+          },
+          onBookingSuccess: () => {
+            logEvent('cal_booking_success', 'cal.com', calLink, 1)
+          },
+        })
+        logEvent('cal_embed_loaded', 'cal.com', calLink)
       })
-      didInitRef.current = true
-      logEvent('cal_embed_loaded', 'cal.com', calLink)
-    } catch {
-      setHasEmbedError(true)
-      logEvent('cal_embed_error', 'cal.com', calLink)
+      .catch(() => {
+        if (cancelled) {
+          return
+        }
+        setHasEmbedError(true)
+        logEvent('cal_embed_error', 'cal.com', calLink)
+      })
+
+    return () => {
+      cancelled = true
     }
   }, [calLink])
 
@@ -48,7 +63,7 @@ export default function CalBookingEmbed({ calUrl = siteMetadata.calCom }: { calU
 
   return (
     <section className="flex flex-col gap-4">
-      <div id={CAL_CONTAINER_ID} className="w-full overflow-hidden" />
+      <div ref={containerRef} className="w-full overflow-hidden" />
 
       <p className="text-sm text-muted-foreground">
         Prefer the hosted page?{' '}
