@@ -1,0 +1,64 @@
+name: Bombadil
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bombadil-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  property-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Start server
+        run: npm run start &
+
+      - name: Wait for server
+        run: curl --retry 30 --retry-all-errors --retry-delay 2 --silent --fail http://localhost:3000 >/dev/null
+
+      - name: Read Bombadil version
+        id: bombadil
+        run: echo "version=$(node -p "require('./node_modules/@antithesishq/bombadil/package.json').version")" >> "$GITHUB_OUTPUT"
+
+      - name: Run Bombadil
+        uses: antithesishq/bombadil-action@v3
+        with:
+          version: ${{ steps.bombadil.outputs.version }}
+          origin: http://localhost:3000
+          specification: ./bombadil/specification.ts
+          time-limit: 5m
+          exit-on-violation: true
+          output-path: bombadil-output
+
+      - name: Upload Bombadil output
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: bombadil-output
+          path: bombadil-output
+          if-no-files-found: ignore

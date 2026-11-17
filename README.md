@@ -54,6 +54,24 @@ npm test
 npm run build
 ```
 
+## Property-based UI tests (Bombadil)
+
+[Bombadil](https://antithesishq.github.io/bombadil/) explores the site with random clicks, scrolls, navigation, and inputs, and checks properties on every state it captures.
+
+- `bombadil/specification.ts`: entry point. It only re-exports. Bombadil checks every exported property and runs every exported action generator.
+- `bombadil/properties/`: custom properties, grouped by concern.
+- The built-in defaults are always included. They fail on uncaught exceptions, unhandled promise rejections, `console.error`, and HTTP 4xx/5xx responses.
+
+Run it against a local production server (Chrome must be installed):
+
+```bash
+npm run build && npm run serve   # in one terminal
+npm run test:bombadil            # in another
+npm run test:bombadil:inspect    # step through the last trace
+```
+
+`BOMBADIL_ORIGIN` (default `http://localhost:3000`) and `BOMBADIL_TIME_LIMIT` (default `2m`) override the target and duration. To replay a failing run, use the `--reproduce` command Bombadil prints. In CI, `.github/workflows/bombadil.yml` runs it for 5 minutes and uploads `bombadil-output` as an artifact.
+
 ## Environment variables
 
 Use `.env.example` as a starting point for `.env.local`.

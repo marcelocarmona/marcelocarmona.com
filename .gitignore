@@ -44,3 +44,6 @@ yarn-error.log*
 
 # isometric buenos aires raw data downloads
 /.cache/
+
+# bombadil test traces
+/bombadil-output/
