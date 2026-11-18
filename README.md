@@ -72,6 +72,21 @@ npm run test:bombadil:inspect    # step through the last trace
 
 `BOMBADIL_ORIGIN` (default `http://localhost:3000`) and `BOMBADIL_TIME_LIMIT` (default `2m`) override the target and duration. To replay a failing run, use the `--reproduce` command Bombadil prints. In CI, `.github/workflows/bombadil.yml` runs it for 5 minutes and uploads `bombadil-output` as an artifact.
 
+## React Doctor
+
+[React Doctor](https://react.doctor) checks React code for bugs, performance, accessibility, security, and maintainability issues.
+
+```bash
+npm run doctor           # scan the whole project
+npm run doctor:changed   # only issues introduced since main
+```
+
+Both exit non-zero on error-severity findings. Configure rules in a `doctor.config.json` (see the [config docs](https://react.doctor/docs/configuration/config-files)).
+
+In CI, `.github/workflows/react-doctor.yml` comments on each PR with the issues it introduces and records the score on pushes to `main`. It's advisory: it never fails the check. Set `blocking: error` in the workflow to gate PRs on new errors.
+
+Coding agents pick up the skill in `.agents/skills/react-doctor`.
+
 ## Environment variables
 
 Use `.env.example` as a starting point for `.env.local`.

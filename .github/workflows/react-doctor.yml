@@ -1,0 +1,51 @@
+# React Doctor: https://www.react.doctor/ci
+#
+# PRs: reports only the issues the PR introduces (sticky comment, inline review
+# comments, commit status). Pushes to main: full scan to track the health score.
+# Advisory for now (blocking: none). Set `blocking: error` to fail PRs on new errors.
+
+name: React Doctor
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+  statuses: write
+
+concurrency:
+  group: react-doctor-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  react-doctor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      # Full history lets React Doctor find the merge base, so PRs only report new issues.
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      # Installs the react-doctor devDependency so CI runs the same version as `npm run doctor`.
+      - name: Install dependencies
+        run: npm ci
+
+      - name: React Doctor
+        uses: millionco/react-doctor@v2
+        with:
+          blocking: none
