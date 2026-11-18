@@ -2,7 +2,15 @@
 
 import Link from 'next/link'
 import type * as Leaflet from 'leaflet'
-import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react'
+import {
+  useCallback,
+  useEffect,
+  useEffectEvent,
+  useMemo,
+  useRef,
+  useState,
+  type KeyboardEvent,
+} from 'react'
 
 import {
   DATA_BASE,
@@ -85,6 +93,9 @@ const ICONS = {
 const btn =
   'pointer-events-auto inline-flex h-10 items-center justify-center gap-2 rounded-full border border-white/10 bg-[#141a2b]/85 px-3 text-sm text-white/85 shadow-lg shadow-black/30 backdrop-blur-md transition hover:border-white/25 hover:bg-[#1b2338]/90 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300'
 
+// Owns the imperative Leaflet map, its event wiring and the UI over it. Splitting would mean
+// threading the map instance and its refs through several components.
+// eslint-disable-next-line react-doctor/no-high-complexity-react-function, react-doctor/no-giant-component
 export default function IsometricBuenosAires() {
   const containerRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -225,7 +236,9 @@ export default function IsometricBuenosAires() {
     writeHashRef.current = writeHash
   }, [goToPlace, clearSelection, writeHash])
 
-  // Build the map once.
+  // Build the map once. The fetches load static assets for the imperative Leaflet setup and are
+  // ignored after unmount through `disposed`.
+  // eslint-disable-next-line react-doctor/no-fetch-in-effect
   useEffect(() => {
     const el = containerRef.current
     if (!el) return
@@ -438,28 +451,29 @@ export default function IsometricBuenosAires() {
   }, [toast])
 
   // Global shortcuts: "/" search, "R" random, Esc closes things.
-  useEffect(() => {
-    const onKey = (e: globalThis.KeyboardEvent) => {
-      const typing = isTyping(e.target)
-      if (e.key === 'Escape') {
-        setShareOpen(false)
-        setAboutOpen(false)
-        if (!typing) clearSelection()
-        return
-      }
-      if (typing || e.metaKey || e.ctrlKey || e.altKey) return
-      if (e.key === '/') {
-        e.preventDefault()
-        inputRef.current?.focus()
-      } else if (e.key === 'r' || e.key === 'R') {
-        e.preventDefault()
-        setHintVisible(false)
-        goRandom()
-      }
+  const onGlobalKey = useEffectEvent((e: globalThis.KeyboardEvent) => {
+    const typing = isTyping(e.target)
+    if (e.key === 'Escape') {
+      setShareOpen(false)
+      setAboutOpen(false)
+      if (!typing) clearSelection()
+      return
     }
+    if (typing || e.metaKey || e.ctrlKey || e.altKey) return
+    if (e.key === '/') {
+      e.preventDefault()
+      inputRef.current?.focus()
+    } else if (e.key === 'r' || e.key === 'R') {
+      e.preventDefault()
+      setHintVisible(false)
+      goRandom()
+    }
+  })
+  useEffect(() => {
+    const onKey = (e: globalThis.KeyboardEvent) => onGlobalKey(e)
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [clearSelection, goRandom])
+  }, [])
 
   // "+" / "-" zoom by whole levels. Capture phase, so Leaflet's own keyboard zoom never sees them.
   useEffect(() => {
@@ -486,6 +500,8 @@ export default function IsometricBuenosAires() {
   }
 
   const onSearchKey = (e: KeyboardEvent<HTMLInputElement>) => {
+    // Keys pressed while an IME is composing belong to the IME, not to the list.
+    if (e.nativeEvent.isComposing) return
     if (e.key === 'ArrowDown') {
       e.preventDefault()
       setActiveIndex((i) => Math.min(i + 1, Math.max(results.length - 1, 0)))
@@ -597,6 +613,9 @@ export default function IsometricBuenosAires() {
               role="combobox"
               aria-expanded={showResults}
               aria-controls="iba-search-results"
+              aria-activedescendant={
+                showResults && results[activeIndex] ? `iba-result-${activeIndex}` : undefined
+              }
               aria-autocomplete="list"
               autoComplete="off"
               spellCheck={false}
@@ -615,25 +634,24 @@ export default function IsometricBuenosAires() {
                 <li className="px-3 py-2.5 text-sm text-white/50">No places match “{query}”</li>
               )}
               {results.map((place, i) => (
+                // Combobox pattern: focus stays in the input, which drives the
+                // active option through aria-activedescendant.
                 <li
                   key={`${place.kind}-${place.name}`}
+                  id={`iba-result-${i}`}
                   role="option"
                   aria-selected={i === activeIndex}
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => choose(place)}
+                  onMouseEnter={() => setActiveIndex(i)}
+                  className={`flex w-full cursor-pointer items-center justify-between gap-3 rounded-xl px-3 py-2 text-left text-sm ${
+                    i === activeIndex ? 'bg-white/10 text-white' : 'text-white/80'
+                  }`}
                 >
-                  <button
-                    type="button"
-                    onMouseDown={(e) => e.preventDefault()}
-                    onClick={() => choose(place)}
-                    onMouseEnter={() => setActiveIndex(i)}
-                    className={`flex w-full items-center justify-between gap-3 rounded-xl px-3 py-2 text-left text-sm ${
-                      i === activeIndex ? 'bg-white/10 text-white' : 'text-white/80'
-                    }`}
-                  >
-                    <span className="truncate">{place.name}</span>
-                    <span className="shrink-0 font-mono text-[10px] tracking-wider text-white/45 uppercase">
-                      {kindLabel(place.kind)}
-                    </span>
-                  </button>
+                  <span className="truncate">{place.name}</span>
+                  <span className="shrink-0 font-mono text-[10px] tracking-wider text-white/45 uppercase">
+                    {kindLabel(place.kind)}
+                  </span>
                 </li>
               ))}
             </ul>

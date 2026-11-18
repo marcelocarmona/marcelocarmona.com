@@ -71,8 +71,10 @@ export async function generateWatchMetadata(
   { params }: SlugPageProps,
   locale: Locale
 ): Promise<Metadata> {
-  const { slug: slugParts } = await params
-  const allPosts = await getAllFilesFrontMatter('blog')
+  const [{ slug: slugParts }, allPosts] = await Promise.all([
+    params,
+    getAllFilesFrontMatter('blog'),
+  ])
   const post = getResolvedVideoPost(slugParts, allPosts)
 
   if (!post) {
@@ -100,8 +102,10 @@ export default async function WatchPage({
   params,
   locale = 'en',
 }: SlugPageProps & { locale?: Locale }) {
-  const { slug: slugParts } = await params
-  const allPosts = await getAllFilesFrontMatter('blog')
+  const [{ slug: slugParts }, allPosts] = await Promise.all([
+    params,
+    getAllFilesFrontMatter('blog'),
+  ])
   const post = getResolvedVideoPost(slugParts, allPosts)
 
   if (!post) {

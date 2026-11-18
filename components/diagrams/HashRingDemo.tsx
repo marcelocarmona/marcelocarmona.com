@@ -189,6 +189,8 @@ const STEPS = [
 
 const STEP_LABELS = STEPS.map((s) => s.label)
 
+// A step-driven figure: each step renders a slice of one SVG, so the branches live together.
+// eslint-disable-next-line react-doctor/no-high-complexity-react-function
 export default function HashRingDemo() {
   const [scheme, setScheme] = useState<Scheme>('ring')
   const [nodeCount, setNodeCount] = useState(5)

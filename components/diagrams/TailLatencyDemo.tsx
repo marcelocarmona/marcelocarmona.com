@@ -235,6 +235,8 @@ const STEPS = [
 
 const STEP_LABELS = STEPS.map((s) => s.label)
 
+// A step-driven figure: each step renders a slice of one SVG, so the branches live together.
+// eslint-disable-next-line react-doctor/no-giant-component
 export default function TailLatencyDemo() {
   const [shards, setShards] = useState(32)
   const [slowPct, setSlowPct] = useState(3)
@@ -369,6 +371,7 @@ export default function TailLatencyDemo() {
                   />
                   {sim.sample.map((_, i) => (
                     <VizTick
+                      // eslint-disable-next-line react-doctor/no-array-index-as-key -- one row per shard; the index is the shard id
                       key={`stub-${i}`}
                       from={{ x: L.spine!.x, y: rowY(i) + barHeight / 2 }}
                       to={{ x: L.chart.x0 - 4, y: rowY(i) + barHeight / 2 }}
@@ -497,7 +500,7 @@ export default function TailLatencyDemo() {
                     {showAggregate &&
                       row.values.map((value, i) => (
                         <VizDot
-                          key={i}
+                          key={i === 0 ? 'p50' : 'p99'}
                           at={{ x: x(value), y: row.y }}
                           radius={4}
                           tone={i === 0 ? 'success' : row.tone}

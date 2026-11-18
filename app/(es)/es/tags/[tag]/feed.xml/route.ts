@@ -7,10 +7,12 @@ import type { TagPageProps } from '@/types/next'
 export const runtime = 'nodejs'
 
 export async function GET(_request: Request, { params }: TagPageProps) {
-  const { tag } = await params
-  const allPosts = await getAllFilesFrontMatter('blog', { locale: 'es' })
+  const [{ tag }, allPosts] = await Promise.all([
+    params,
+    getAllFilesFrontMatter('blog', { locale: 'es' }),
+  ])
   const posts = allPosts.filter((post) =>
-    (post.tags || []).map((postTag) => kebabCase(postTag)).includes(tag)
+    (post.tags || []).some((postTag) => kebabCase(postTag) === tag)
   )
   const rss = generateRss(posts, `es/tags/${tag}/feed.xml`, {
     title: `${siteMetadata.title} - ${tag} (ES)`,

@@ -45,6 +45,7 @@ export const CodeSandbox = ({
         src={`https://codesandbox.io/embed/${codeSandboxId}?fontsize=14&hidenavigation=1&theme=dark`}
         className="h-[500px] w-full"
         allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
+        // eslint-disable-next-line react-doctor/iframe-missing-sandbox -- codesandbox.io is cross-origin, so allow-same-origin cannot escape the sandbox; the embed needs both to run
         sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
       />
     </div>

@@ -7,7 +7,7 @@ import type { LocaleInput } from '@/types/content'
 import { cn } from '@/lib/utils/cn'
 
 const controlClassName =
-  'rounded-full bg-muted p-2 text-muted-foreground transition-all hover:bg-border-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring'
+  'rounded-full bg-muted p-2 text-muted-foreground transition-colors hover:bg-border-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring'
 
 const ScrollTopAndComment = ({
   locale = 'en',

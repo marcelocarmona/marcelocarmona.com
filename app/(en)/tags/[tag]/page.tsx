@@ -30,11 +30,12 @@ export async function generateMetadata({ params }: TagPageProps) {
 }
 
 export default async function TagPage({ params }: TagPageProps) {
-  const { tag } = await params
-  const allPosts = await getAllFilesFrontMatter('blog', { locale: 'en' })
+  const [{ tag }, allPosts] = await Promise.all([
+    params,
+    getAllFilesFrontMatter('blog', { locale: 'en' }),
+  ])
   const posts = allPosts.filter(
-    (post) =>
-      post.draft !== true && (post.tags || []).map((postTag) => kebabCase(postTag)).includes(tag)
+    (post) => post.draft !== true && (post.tags || []).some((postTag) => kebabCase(postTag) === tag)
   )
 
   // Without this an unknown tag renders an empty page with HTTP 200, telling

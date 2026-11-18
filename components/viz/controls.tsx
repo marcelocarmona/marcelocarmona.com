@@ -231,6 +231,7 @@ export function VizStack({ items, active }: { items: readonly ReactNode[]; activ
       {items.map((item, i) => (
         // Index keys: the list is a fixed script of steps, never reordered, and
         // two steps are allowed to carry identical text.
+        // eslint-disable-next-line react-doctor/no-array-index-as-key -- see above
         <span key={i} data-active={i === active ? '' : undefined}>
           {item}
         </span>

@@ -438,7 +438,7 @@ async function buildTagsIndexDocument(locale: Locale): Promise<MarkdownDocument>
 async function buildTagDocument(locale: Locale, tag: string): Promise<MarkdownDocument | null> {
   const posts = await getAllFilesFrontMatter('blog', { locale })
   const tagged = posts.filter((post) =>
-    (post.tags || []).map((postTag) => kebabCase(postTag)).includes(tag)
+    (post.tags || []).some((postTag) => kebabCase(postTag) === tag)
   )
 
   if (!tagged.length) {

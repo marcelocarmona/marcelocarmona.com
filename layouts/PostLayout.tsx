@@ -33,6 +33,68 @@ const postDateTemplate: Intl.DateTimeFormatOptions = {
   day: 'numeric',
 }
 
+const absoluteUrl = (path: string) =>
+  path.startsWith('http') ? path : `${siteMetadata.siteUrl}${path}`
+
+function buildArticleSchema(
+  frontMatter: ContentFrontMatter,
+  authorDetails: AuthorFrontMatter[],
+  pageUrl: string
+) {
+  const { date, title, tags } = frontMatter
+  const image = frontMatter.images?.[0] || siteMetadata.socialBanner
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: title,
+    description: frontMatter.summary || siteMetadata.description,
+    articleSection: tags?.[0],
+    keywords: frontMatter.topics || tags || [],
+    datePublished: date,
+    dateModified: frontMatter.lastmod || date,
+    image: [absoluteUrl(image)],
+    mainEntityOfPage: pageUrl,
+    isAccessibleForFree: true,
+    inLanguage: frontMatter.locale === 'es' ? 'es-ES' : 'en-US',
+    author: authorDetails.map((author) => ({
+      '@type': 'Person',
+      name: author.name,
+      url: author.github || author.linkedin || author.twitter || siteMetadata.siteUrl,
+    })),
+    publisher: {
+      '@type': 'Person',
+      name: siteMetadata.author,
+      url: siteMetadata.siteUrl,
+    },
+  }
+}
+
+function buildBreadcrumbSchema(
+  postUi: { homeLabel: string; blogLabel: string },
+  blogPath: string,
+  title: string | undefined,
+  pageUrl: string
+) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: postUi.homeLabel, item: siteMetadata.siteUrl },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: postUi.blogLabel,
+        item: `${siteMetadata.siteUrl}${blogPath}`,
+      },
+      { '@type': 'ListItem', position: 3, name: title, item: pageUrl },
+    ],
+  }
+}
+
+const NO_POSTS: ContentFrontMatter[] = []
+const NO_LANGUAGE_VERSIONS: LanguageVersion[] = []
+const NO_HEADINGS: TocHeading[] = []
+
 interface PostLayoutProps {
   frontMatter: ContentFrontMatter
   authorDetails: AuthorFrontMatter[]
@@ -49,73 +111,19 @@ export default function PostLayout({
   authorDetails,
   next,
   prev,
-  relatedPosts = [],
-  languageVersions = [],
-  toc = [],
+  relatedPosts = NO_POSTS,
+  languageVersions = NO_LANGUAGE_VERSIONS,
+  toc = NO_HEADINGS,
   children,
 }: PostLayoutProps) {
   const { fileName, date, lastmod, title, tags } = frontMatter
   const { post: postUi } = getUiCopy(frontMatter.locale)
-  const image = frontMatter.images?.[0] || siteMetadata.socialBanner
-  const imageUrl = image.startsWith('http') ? image : `${siteMetadata.siteUrl}${image}`
   const blogPath = getBlogPath(frontMatter.locale)
   const articlePath = getPostPath(frontMatter)
   const markdownPath = markdownSiblingPath(articlePath)
-  const pageUrl = frontMatter.canonicalUrl
-    ? frontMatter.canonicalUrl.startsWith('http')
-      ? frontMatter.canonicalUrl
-      : `${siteMetadata.siteUrl}${frontMatter.canonicalUrl}`
-    : `${siteMetadata.siteUrl}${articlePath}`
-
-  const articleSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'BlogPosting',
-    headline: title,
-    description: frontMatter.summary || siteMetadata.description,
-    articleSection: tags?.[0],
-    keywords: frontMatter.topics || tags || [],
-    datePublished: date,
-    dateModified: frontMatter.lastmod || date,
-    image: [imageUrl],
-    mainEntityOfPage: pageUrl,
-    isAccessibleForFree: true,
-    inLanguage: frontMatter.locale === 'es' ? 'es-ES' : 'en-US',
-    author: authorDetails.map((author) => ({
-      '@type': 'Person',
-      name: author.name,
-      url: author.github || author.linkedin || author.twitter || siteMetadata.siteUrl,
-    })),
-    publisher: {
-      '@type': 'Person',
-      name: siteMetadata.author,
-      url: siteMetadata.siteUrl,
-    },
-  }
-
-  const breadcrumbSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      {
-        '@type': 'ListItem',
-        position: 1,
-        name: postUi.homeLabel,
-        item: siteMetadata.siteUrl,
-      },
-      {
-        '@type': 'ListItem',
-        position: 2,
-        name: postUi.blogLabel,
-        item: `${siteMetadata.siteUrl}${blogPath}`,
-      },
-      {
-        '@type': 'ListItem',
-        position: 3,
-        name: title,
-        item: pageUrl,
-      },
-    ],
-  }
+  const pageUrl = absoluteUrl(frontMatter.canonicalUrl || articlePath)
+  const articleSchema = buildArticleSchema(frontMatter, authorDetails, pageUrl)
+  const breadcrumbSchema = buildBreadcrumbSchema(postUi, blogPath, title, pageUrl)
 
   return (
     <SectionContainer>

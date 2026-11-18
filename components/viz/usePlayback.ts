@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState, useSyncExternalStore } from 'react'
 
 /**
  * Discrete-step playback driver shared by every diagram.
@@ -30,16 +30,14 @@ export type Playback = {
 
 export function usePlayback(totalSteps: number, intervalMs = 900): Playback {
   const [step, setStep] = useState(0)
-  const [playing, setPlaying] = useState(true)
+  // null until the reader presses a control; until then autoplay is the default.
+  const [userPlaying, setPlaying] = useState<boolean | null>(null)
   const [speed, setSpeed] = useState(1)
   const [onScreen, setOnScreen] = useState(true)
 
   // Respect the OS-level reduced-motion setting: never autoplay.
   const reduced = usePrefersReducedMotion()
-
-  useEffect(() => {
-    if (reduced) setPlaying(false)
-  }, [reduced])
+  const playing = userPlaying ?? !reduced
 
   useEffect(() => {
     if (!playing || !onScreen || totalSteps <= 0) return
@@ -65,21 +63,23 @@ export function usePlayback(totalSteps: number, intervalMs = 900): Playback {
     setStep(0)
   }, [])
 
-  const toggle = useCallback(() => setPlaying((p) => !p), [])
+  const toggle = useCallback(() => setPlaying(!playing), [playing])
 
   return { step, playing, speed, setStep, next, prev, reset, toggle, setSpeed, setOnScreen }
 }
 
+const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)'
+
+function subscribeToReducedMotion(onChange: () => void) {
+  const mq = window.matchMedia(REDUCED_MOTION_QUERY)
+  mq.addEventListener('change', onChange)
+  return () => mq.removeEventListener('change', onChange)
+}
+
 export function usePrefersReducedMotion(): boolean {
-  const [reduced, setReduced] = useState(false)
-
-  useEffect(() => {
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
-    setReduced(mq.matches)
-    const onChange = (e: MediaQueryListEvent) => setReduced(e.matches)
-    mq.addEventListener('change', onChange)
-    return () => mq.removeEventListener('change', onChange)
-  }, [])
-
-  return reduced
+  return useSyncExternalStore(
+    subscribeToReducedMotion,
+    () => window.matchMedia(REDUCED_MOTION_QUERY).matches,
+    () => false
+  )
 }

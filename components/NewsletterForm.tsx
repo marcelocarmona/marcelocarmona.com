@@ -12,31 +12,44 @@ const NewsletterForm = ({ title = 'Subscribe to the newsletter' }: { title?: str
   const [error, setError] = useState(false)
   const [message, setMessage] = useState('')
   const [subscribed, setSubscribed] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
 
   const subscribe = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (!inputEl.current) {
+    if (!inputEl.current || submitting) {
       return
     }
 
-    const res = await fetch(`/api/${siteMetadata.newsletter.provider}`, {
-      body: JSON.stringify({
-        email: inputEl.current.value,
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      method: 'POST',
-    })
+    setSubmitting(true)
+    let failed = true
+    try {
+      const res = await fetch(`/api/${siteMetadata.newsletter.provider}`, {
+        body: JSON.stringify({
+          email: inputEl.current.value,
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        method: 'POST',
+      })
 
-    const { error } = (await res.json()) as NewsletterResponse
-    if (error) {
+      if (res.ok) {
+        const { error } = (await res.json()) as NewsletterResponse
+        failed = Boolean(error)
+      }
+    } catch {
+      failed = true
+    } finally {
+      setSubmitting(false)
+    }
+
+    if (failed) {
       setError(true)
       setMessage('Your e-mail address is invalid or you are already subscribed!')
       return
     }
 
-    inputEl.current.value = ''
+    if (inputEl.current) inputEl.current.value = ''
     setError(false)
     setSubscribed(true)
     setMessage('Successfully! 🎉 You are now subscribed.')
@@ -69,7 +82,7 @@ const NewsletterForm = ({ title = 'Subscribe to the newsletter' }: { title?: str
               subscribed ? 'cursor-default' : 'hover:bg-primary/90'
             )}
             type="submit"
-            disabled={subscribed}
+            disabled={subscribed || submitting}
           >
             {subscribed ? 'Thank you!' : 'Sign up'}
           </button>

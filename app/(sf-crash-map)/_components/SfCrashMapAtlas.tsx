@@ -88,6 +88,9 @@ const mapStyle = {
   ],
 }
 
+// Owns the imperative MapLibre map and the panels bound to it. Splitting would mean threading
+// the map instance and its refs through several components.
+// eslint-disable-next-line react-doctor/no-high-complexity-react-function, react-doctor/no-giant-component
 export default function SfCrashMapAtlas() {
   const mapContainerRef = useRef<HTMLDivElement | null>(null)
   const mapRef = useRef<Map | null>(null)
@@ -251,7 +254,7 @@ export default function SfCrashMapAtlas() {
     })
     popupRef.current = popup
 
-    map.on('load', () => {
+    map.once('load', () => {
       const latest = latestMapStateRef.current
       addAtlasLayers(map, latest.atlas || atlas, popup)
       syncCrashLayerFilters(
@@ -939,23 +942,26 @@ function formatPeriodRange(
   return `Since ${recentCrashesSinceYear}`
 }
 
+const dateFormatter = new Intl.DateTimeFormat('en-US', {
+  month: 'short',
+  day: 'numeric',
+  year: 'numeric',
+})
+const shortYearFormatter = new Intl.DateTimeFormat('en-US', { year: '2-digit' })
+
 function formatDate(value: string | null | undefined) {
   if (!value) return 'Unavailable'
 
   const date = toDisplayDate(value)
   if (Number.isNaN(date.getTime())) return 'Unavailable'
 
-  return new Intl.DateTimeFormat('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  }).format(date)
+  return dateFormatter.format(date)
 }
 
 function formatShortYear(value: string) {
   const date = toDisplayDate(value)
   if (Number.isNaN(date.getTime())) return value.slice(0, 4)
-  return new Intl.DateTimeFormat('en-US', { year: '2-digit' }).format(date)
+  return shortYearFormatter.format(date)
 }
 
 function easeOutCubic(t: number) {

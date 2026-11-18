@@ -292,11 +292,12 @@ function translationsFor(
   pathIn: (locale: Locale) => string
 ): Translations {
   const translations: Translations = {}
-  SUPPORTED_LOCALES.filter(
-    (target) => target === locale || availableLocales.includes(target)
-  ).forEach((target) => {
-    translations[target] = pathIn(target)
-  })
+  const available = new Set(availableLocales)
+  SUPPORTED_LOCALES.filter((target) => target === locale || available.has(target)).forEach(
+    (target) => {
+      translations[target] = pathIn(target)
+    }
+  )
   return translations
 }
 

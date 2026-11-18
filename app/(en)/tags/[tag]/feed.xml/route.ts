@@ -6,10 +6,12 @@ import type { TagPageProps } from '@/types/next'
 export const runtime = 'nodejs'
 
 export async function GET(_request: Request, { params }: TagPageProps) {
-  const { tag } = await params
-  const allPosts = await getAllFilesFrontMatter('blog', { locale: 'en' })
+  const [{ tag }, allPosts] = await Promise.all([
+    params,
+    getAllFilesFrontMatter('blog', { locale: 'en' }),
+  ])
   const posts = allPosts.filter((post) =>
-    (post.tags || []).map((postTag) => kebabCase(postTag)).includes(tag)
+    (post.tags || []).some((postTag) => kebabCase(postTag) === tag)
   )
   const rss = generateRss(posts, `tags/${tag}/feed.xml`)
 

@@ -237,6 +237,8 @@ const STEPS = [
 
 const STEP_LABELS = STEPS.map((s) => s.label)
 
+// A step-driven figure: each step renders a slice of one SVG, so the branches live together.
+// eslint-disable-next-line react-doctor/no-high-complexity-react-function, react-doctor/no-giant-component
 export default function QuorumDemo() {
   const [nodes, setNodes] = useState(5)
   const [writeQuorum, setWriteQuorum] = useState(3)

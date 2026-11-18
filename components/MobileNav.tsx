@@ -11,15 +11,10 @@ const MobileNav = ({ locale = 'en' }: { locale?: LocaleInput }) => {
   const navLinks = getHeaderNavLinks(locale)
 
   const onToggleNav = () => {
-    setNavShow((status) => {
-      if (status) {
-        document.body.style.overflow = 'auto'
-      } else {
-        // Prevent scrolling
-        document.body.style.overflow = 'hidden'
-      }
-      return !status
-    })
+    const nextNavShow = !navShow
+    // Prevent page scrolling while the menu is open
+    document.body.style.overflow = nextNavShow ? 'hidden' : 'auto'
+    setNavShow(nextNavShow)
   }
 
   return (

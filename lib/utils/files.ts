@@ -8,8 +8,7 @@ const pipe =
   (x: any) =>
     fns.reduce((v, f) => f(v), x)
 
-const flattenArray = (input: any[]): string[] =>
-  input.reduce((acc, item) => [...acc, ...(Array.isArray(item) ? item : [item])], [])
+const flattenArray = (input: any[]): string[] => input.flat()
 
 const map = (fn: Mapper) => (input: any[]) => input.map(fn)
 

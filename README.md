@@ -74,18 +74,17 @@ npm run test:bombadil:inspect    # step through the last trace
 
 ## React Doctor
 
-[React Doctor](https://react.doctor) checks React code for bugs, performance, accessibility, security, and maintainability issues.
+[React Doctor](https://react.doctor) rules run as part of ESLint through [`eslint-plugin-react-doctor`](https://www.npmjs.com/package/eslint-plugin-react-doctor). They check React code for bugs, performance, accessibility, security, and maintainability issues, so they show up in the editor, in `npm run lint`, in the pre-commit hook, and in CI.
 
-```bash
-npm run doctor           # scan the whole project
-npm run doctor:changed   # only issues introduced since main
+The lint is strict: `npm run lint:check` (used by CI) and the pre-commit hook fail on any warning, not only on errors.
+
+When a finding is a deliberate tradeoff, disable it on that line and say why:
+
+```tsx
+// eslint-disable-next-line react-doctor/no-giant-component -- one SVG driven by a single step
 ```
 
-Both exit non-zero on error-severity findings. Configure rules in a `doctor.config.json` (see the [config docs](https://react.doctor/docs/configuration/config-files)).
-
-In CI, `.github/workflows/react-doctor.yml` comments on each PR with the issues it introduces and records the score on pushes to `main`. It's advisory: it never fails the check. Set `blocking: error` in the workflow to gate PRs on new errors.
-
-Coding agents pick up the skill in `.agents/skills/react-doctor`.
+Rules that don't fit this stack are turned off in `eslint.config.js`, each with a comment explaining why.
 
 ## Environment variables
 

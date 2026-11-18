@@ -1,16 +1,19 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useSyncExternalStore } from 'react'
 import { useTheme } from 'next-themes'
 
+const subscribeToNothing = () => () => {}
+
 const ThemeSwitch = () => {
-  const [mounted, setMounted] = useState(false)
+  // false during SSR and hydration, true afterwards: the theme is only known on the client
+  const mounted = useSyncExternalStore(
+    subscribeToNothing,
+    () => true,
+    () => false
+  )
   const { setTheme, resolvedTheme } = useTheme()
   const toggleTheme = () => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
 
   return (
     <button
