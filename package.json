@@ -7,6 +7,7 @@
   },
   "allowScripts": {
     "esbuild@0.28.2": true,
+    "fsevents@2.3.3": true,
     "unrs-resolver@1.13.0": true
   },
   "scripts": {
@@ -62,7 +63,7 @@
     "remark-math": "^6.0.0",
     "sharp": "^0.35.5",
     "shiki": "^4.6.0",
-    "tailwind-merge": "^3.7.0",
+    "tailwind-merge": "^3.7.1",
     "tailwindcss": "^4.2.4",
     "unist-util-visit": "^5.2.0"
   },
