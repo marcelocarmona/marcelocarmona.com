@@ -20,12 +20,12 @@ jobs:
 
     steps:
       - name: Checkout main
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           ref: main
 
       - name: Setup Node
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
         with:
           node-version: 24
           cache: npm
@@ -51,6 +51,8 @@ jobs:
             npm update --save -- "${dependencies[@]}"
           fi
 
+          npm dedupe
+
       - name: Detect dependency changes
         id: changes
         shell: bash
@@ -60,6 +62,9 @@ jobs:
           else
             echo "updated=true" >> "$GITHUB_OUTPUT"
           fi
+
+      - name: Audit dependencies
+        run: npm audit --audit-level=high
 
       - name: Lint
         if: steps.changes.outputs.updated == 'true'
